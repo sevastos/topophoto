@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>TopoFoto</title>
+        <meta name="description" content="">
+        <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
+
+        <link rel="stylesheet" href="css/normalize.min.css">
+
+        <link href="//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.css" rel="stylesheet">
+        <!--[if lte IE 8]>
+            <link href='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.ie.css' rel='stylesheet' >
+        <![endif]-->
+        <style>
+            body { margin:0; padding:0; }
+            #map { position:absolute; top:0; bottom:0; width:100%; }
+        </style>
+        <link href="http://fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">
+        <link href="css/fonts.css" rel="stylesheet">
+        <link href="css/main.css" rel="stylesheet">
+
+
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+            <script>window.html5 || document.write('<script src="js/html5shiv.js"><\/script>')</script>
+        <![endif]-->
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+
+        <div id="map"></div>
+
+
+        <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
+        <script>window.jQuery || document.write('<script src="js/jquery-1.10.2.min.js"><\/script>')</script>
+
+        <script src='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.js'></script>
+
+        <div id="search" class="block">
+            <form>
+                <input type="text" id="q">
+                <input type="submit" value="LOAD" id="trigger">
+            </form>
+        </div>
+
+        <div id="thumbtip">
+            <img src="//:0" />
+        </div>
+
+        <script type="text/javascript">
+        var DIMS = ['lat', 'lon', 'lan'];
+        var DIMS2 = ['geolan', 'geolon', 'geolat'];
+        var DIMAP = {
+            'lat': 'lat',
+            'lon': 'lon',
+            'lan': 'lat',
+            'geolat': 'lat',
+            'geolan': 'lat',
+            'geolon': 'lon'
+        };
+
+        function getFlickrPics(opts){
+            var tags = (opts['text']?opts['text']+',':'')+encodeURIComponent('geo:lon');
+            //var pic= $("#box").val();
+            // geo:lat= geotagged comma delimited
+            var requestUrl = 'http://api.flickr.com/services/feeds/photos_public.gne?tags='
+                           + tags + "&tagmode=all&format=json&jsoncallback=?";
+
+            var extraInfo = ['geo', 'url_sq', 'url_m', 'path_alias'];
+
+            // Extra search params
+            var params = [];
+            if (opts && opts['text']) {
+                params.push('text=' + encodeURIComponent(opts['text']));
+            }
+            if (opts && opts['lat'] && opts['lon']) {
+                params.push('lat=' + opts['lat']);
+                params.push('lon=' + opts['lon']);
+                params.push('radius=' + (opts['radius'] || 32));
+            }
+
+            if (params.length > 0) {
+                params = params.join('&') + '&';
+            } else {
+                params = '';
+            }
+
+            // Flickr commons license only
+            var is_commons = 'true';
+
+            var requestUrl = 'http://ycpi.api.flickr.com/services/rest/?method=flickr.photos.search&api_key=dcb8fed3cbb1aa69c077ec2de75ced91&'+params+'has_geo=1&is_commons='+is_commons+'&extras='+extraInfo.join(',')+'&format=json&jsoncallback=?';
+
+            $.getJSON(requestUrl, handleFlickrPics)
+        };
+
+        function handleFlickrPics(pics) {
+            var flickrPics = {};
+            var flickrPicsIds = [];
+
+            if (!pics || !pics.photos || !pics.photos.photo) {
+                alert('No photos');
+                console.log(pics);
+                return;
+            } 
+
+            $.each(pics.photos.photo, function(index, pic) {
+                var id = pic.id;
+                var url = 'http://www.flickr.com/photos/' + (pic.url_path || pic.owner) + '/' + id + '/';
+                flickrPicsIds.push(id);
+                flickrPics[id] = {
+                    item: pic,
+                    url: url,
+                    lat: pic.latitude,
+                    lon: pic.longitude
+                };
+                addPhoto(id, url, pic.url_sq, pic.url_m, pic.latitude, pic.longitude, pic.title);
+            });
+
+            refreshMapMarkers();
+        }
+
+        function addPhoto(id, url, thumb, img, lat, lon, title) {
+            // check img = uri || data ?
+
+            // add marker
+            photoLib[id] = {
+                type: 'Feature',
+                geometry: {
+                    type: 'Point',
+                    coordinates: [lon, lat]
+                },
+                properties: {
+                    'marker-color': '#f65857',
+                    //'marker-symbol': 'star-stroked',
+                    'title': (title || id), // + ' (' + [lon, lat].join(',') + ')',
+                    'image': img,
+                    'thumb': thumb,
+                    'url': url || ''
+                }
+            };
+
+        }
+
+        function refreshMapMarkers() {
+            console.log('refreshed');
+            map.markerLayer.setGeoJSON({
+                type: 'FeatureCollection',
+                features: $.map(photoLib, function(k, v) {
+                              return [k];
+                          })
+            });
+        }
+
+        // APP
+        var photoLib = {};
+
+        /// MAP      
+        var map = L.mapbox.map('map', 'sevm.map-pfi9rnav')
+                    .setView([26, 6], 2);
+
+        // behaviour
+        map.markerLayer.on('click', function(e) {
+            var zoom = map.getZoom();
+            zoom = (zoom > 6 ? zoom : 6);
+            map.setView(e.layer.getLatLng(), zoom);
+        });
+        map.markerLayer.on('mouseover', function(e) {
+            //e.layer.openPopup();
+            domCache['thumbtip-img']
+                .attr('src', e.layer.feature.properties.thumb);
+            domCache['thumbtip']
+                .finish()
+                .delay(150)
+                .fadeIn();
+
+        });
+        map.markerLayer.on('mouseout', function(e) {
+            //e.layer.closePopup();
+            domCache['thumbtip']
+                .finish()
+                .fadeOut();
+        });
+
+        // Add custom popups to each using our custom feature properties
+        map.markerLayer.on('layeradd', function(e) {
+            var marker = e.layer,
+                feature = marker.feature;
+
+            // Create custom popup content
+            var popupContent =  '<a target="_blank" rel="external" class="popup" href="' + feature.properties.url + '">' +
+                                    '<img class="anim" src="' + feature.properties.image + '">' +
+                                '   <br/><span>' + feature.properties.title + '</span>' +
+                                '</a>';
+
+            // http://leafletjs.com/reference.html#popup
+            marker.bindPopup(popupContent,{
+                closeButton: false,
+                minWidth: 260
+            });
+            domCache['thumbtip']
+                .finish()
+                .fadeOut();
+        });
+
+        var domCache = {};
+
+        $(document).ready(function(){
+            domCache['thumbtip'] = $('#thumbtip');
+            domCache['thumbtip-img'] = $('#thumbtip img');
+
+            $('#search form').submit(function(e){
+                e.preventDefault();
+                photoLib = {};
+
+                var opts = {
+                    text: $('#q').val()
+                };
+
+                var mapLatLng = map.getCenter();
+                if (map.getZoom() > 10) {
+                    opts.lat = mapLatLng.lat;
+                    opts.lon = mapLatLng.lng;
+                    opts.radius = 32;
+                }
+                getFlickrPics(opts);
+                return false;
+            });
+        })
+        </script>
+
+        <script src="js/main.js"></script>
+    </body>
+</html>
