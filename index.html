@@ -4,7 +4,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        <title>TopoPhotos</title>
+        <title>TopoPhoto</title>
         <meta name="description" content="">
         <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no' />
 
@@ -31,7 +31,12 @@
 
 
         <header class="animated slideDown">
-            <h1>TopoPhotos</h1>
+            <h1>TopoPhoto</h1>
+
+<!--             <form id="search" class="block">
+                <input type="text" id="q" placeholder="Search flickr..." autocomplete="off">
+                <input type="submit" value="Load" id="trigger">
+            </form> -->
 
             <form id="search" class="block">
                 <input type="text" id="q" placeholder="Search flickr..." autocomplete="off">
@@ -42,17 +47,7 @@
 
         <div id="map"></div>
         <div class="photolist">
-            <ul id="photolist" class="block animated">
-<!--                 <li>
-                    <div class="photolist-info">
-                        <span class="photolist-name">ampra.jpg</span>
-                        <span class="photolist-size">35 KB</span>
-                    </div>
-                    <div class="photolist-img-wrap">
-                        <img src="http://lorempixel.com/500/212/?176" class="photolist-img" />
-                    </div>
-                </li> -->
-            </ul>
+            <ul id="photolist" class="block animated"></ul>
         </div>
 
         <div class="full modal dnd-msg" id="photo-dropzone">Drop your geotagged photos here</div>
