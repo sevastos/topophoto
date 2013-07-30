@@ -27,7 +27,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-images, .icon-location, .icon-location-2, .icon-compass, .icon-map, .icon-clock, .icon-busy, .icon-spinner, .icon-cog, .icon-info, .icon-info-2, .icon-github, .icon-github-2, .icon-twitter, .icon-twitter-2, .icon-twitter-3, .icon-remove, .icon-upload, .icon-hammer, .icon-upload-2, .icon-loop, .icon-loop-2, .icon-flickr, .icon-flickr-2, .icon-flickr-3, .icon-target {
+.icon-images, .icon-location, .icon-location-2, .icon-compass, .icon-map, .icon-clock, .icon-busy, .icon-spinner, .icon-cog, .icon-info, .icon-info-2, .icon-github, .icon-github-2, .icon-twitter, .icon-twitter-2, .icon-twitter-3, .icon-remove, .icon-upload, .icon-hammer, .icon-upload-2, .icon-loop, .icon-loop-2, .icon-flickr, .icon-flickr-2, .icon-flickr-3, .icon-target, .icon-search, .icon-binoculars {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -114,4 +114,10 @@ you can use the generic selector below, but it's slower:
 }
 .icon-target:before {
 	content: "\e019";
+}
+.icon-search:before {
+	content: "\e01a";
+}
+.icon-binoculars:before {
+	content: "\e01b";
 }
