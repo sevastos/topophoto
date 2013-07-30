@@ -492,7 +492,7 @@ var TpApp = {
       var deltaScrollTop = 0;
       var absTarget = photoTop;
       var dir = '';
-      console.log('photoTop', photoTop, 'photoListViewTop', photoListViewTop);
+      
       if (photoTop < photoListViewTop) {
         //scroll up
         dir = '-';
