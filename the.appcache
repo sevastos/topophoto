@@ -1,31 +1,41 @@
 CACHE MANIFEST
 
-#version 1.0 7-28-2013
+#version 0.0.1 2013-7-28
 
 CACHE:
 
-#images
-http://a.tiles.mapbox.com/v3/sevm.map-pfi9rnav/*
-http://b.tiles.mapbox.com/v3/sevm.map-pfi9rnav/*
-http://c.tiles.mapbox.com/v3/sevm.map-pfi9rnav/*
-http://d.tiles.mapbox.com/v3/sevm.map-pfi9rnav/*
+######
+# APP 
 
-#style sheets
-http://api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.css
-http://fonts.googleapis.com/css?family=Lato:300,400
+# css
+css/fonts.css
+css/normalize.min.css
 #/css/main.css
-/css/normalize.min.css
 
-#style sheet images
-
-
-#javascript files
-/js/jquery-1.10.2.min.js
-/js/imagesloaded.pkgd.min.js
-http://api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.js
-/js/load-image.min.js
-/js/dropzone.min.js
+# js
+js/jquery-1.10.2.min.js
+js/imagesloaded.pkgd.min.js
+js/load-image.min.js
 #/js/main.js
+
+
+############
+# 3RD PARTY
+
+# js
+//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.js
+//a.tiles.mapbox.com/v3/sevm.map-pfi9rnav.json
+//a.tiles.mapbox.com/v3/sevm.map-pfi9rnav/markers.geojson
+
+# img
+//c.tiles.mapbox.com/v3/sevm.map-pfi9rnav/2/1/1.png
+//d.tiles.mapbox.com/v3/sevm.map-pfi9rnav/2/2/1.png
+//a.tiles.mapbox.com/v3/sevm.map-pfi9rnav/2/2/2.png
+//d.tiles.mapbox.com/v3/sevm.map-pfi9rnav/2/1/2.png
+
+# css
+//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.css
+//fonts.googleapis.com/css?family=Lato:300,400
 
 NETWORK:
 *
