@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-#version 0.0.2 2013-7-31
+#version 0.0.3 2013-7-31
 
 CACHE:
 
@@ -8,18 +8,25 @@ CACHE:
 # APP 
 
 # html
-/
+#/
 
 # css
 css/fonts.css
 css/normalize.min.css
-#/css/main.css
+#css/main.css
+
+# fonts
+css/fonts/icomoon.woff
+css/fonts/icomoon.ttf
+css/fonts/icomoon.eot
+css/fonts/icomoon.svg
+
 
 # js
 js/jquery-1.10.2.min.js
 js/imagesloaded.pkgd.min.js
 js/load-image.min.js
-#/js/main.js
+#js/main.js
 
 
 ############
