@@ -36,6 +36,7 @@ js/load-image.min.js
 //api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.js
 //a.tiles.mapbox.com/v3/sevm.map-pfi9rnav.json
 //a.tiles.mapbox.com/v3/sevm.map-pfi9rnav/markers.geojson
+//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js
 
 # img
 //a.tiles.mapbox.com/v3/marker/pin-m+F65857.png

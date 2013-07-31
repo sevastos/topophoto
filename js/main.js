@@ -70,7 +70,7 @@ function handleFlickrPics(pics) {
 
     if (!pics || !pics.photos || !pics.photos.photo) {
         alert('No photos');
-        console.log(pics);
+        Helpers.log(pics);
         return;
     } 
 
@@ -113,7 +113,7 @@ function addPhoto(id, url, thumb, img, lat, lon, title) {
 }
 
 function refreshMapMarkers(data) {
-    console.log('refreshed');
+    Helpers.log('refreshed');
     map.markerLayer.setGeoJSON({
         type: 'FeatureCollection',
         features: $.map(data || photoLib, function(k, v) {
@@ -132,8 +132,7 @@ var map = L.mapbox.map('map', 'sevm.map-pfi9rnav', {zoomControl: true})
 map.on('ready', function() {
     imagesLoaded(document.querySelectorAll('.leaflet-tile'))
         .on('always', function(instance) {
-            console.log('images loaded');
-            document.getElementById('map').classList.add('ready'); // 'animated', 'mapLoaded');
+            document.getElementById('map').classList.add('ready');
         });
 });
 
@@ -301,14 +300,11 @@ var TpApp = {
       e.preventDefault();
 
       if (!e.dataTransfer || !e.dataTransfer.files) {
-        console.log('No files');
+        Helpers.log('No files');
         return false;
       }
 
       var files = e.dataTransfer.files;
-      console.log('files');
-      console.log(typeof files);
-      console.log(files);
       TpApp.file.processAll(files);
 
       return false;
@@ -347,7 +343,6 @@ var TpApp = {
       }, true);
       document.getElementById('upload-more').addEventListener('click', TpApp.traditionalUpload.showFileDialog);
 
-
       TpApp.cache['uploadfallback'].addEventListener('change', TpApp.traditionalUpload.processFiles);
 
     },
@@ -372,7 +367,6 @@ var TpApp = {
     },
     // each
     process: function(file) {
-      //console.log('Process file: ', file.name, file);
       try {
         TpApp.photo.getLatLng(file, function(file, loc) {
           if (TpApp.cache['atLeastOneGood'] === false) {
@@ -384,7 +378,7 @@ var TpApp = {
           TpApp.map.compile();
         });
       } catch(e) {
-        console.log('Invalid photo', e);
+        Helpers('Invalid photo', e);
       }
     }
   },
@@ -441,8 +435,6 @@ var TpApp = {
   // Photos
   photo: {
     addToList: function(photo) {
-      //console.log('Add to list: ', photo.file.name, photo.file);
-
       var res = TpApp.photosStore.add(photo);
       var id = res[1];
       photo.id = id;
@@ -469,20 +461,19 @@ var TpApp = {
         }.bind(this, pcl), 10);
       }
     },
-    // next(file, location)
+    // Cb: next(file, location)
     getLatLng: function(file, next) {
       loadImage.parseMetaData(file, function(data) {
         if (!data) {
           next(data, null);  
           return;
         }
-        //console.log('Process getLatLng');
-        var orientation = data.exif.get('Orientation');
+
+        //var orientation = data.exif.get('Orientation');
         var loc = [];
         loc[GEOLAT] = Helpers.gps.coordsToDec(data.exif.get('GPSLatitude'), data.exif.get('GPSLatitudeRef'));
         loc[GEOLON] = Helpers.gps.coordsToDec(data.exif.get('GPSLongitude'), data.exif.get('GPSLongitudeRef'));
 
-        //console.log('Exif', orientation, loc);
         if (typeof loc[GEOLAT] === 'number' && typeof loc[GEOLON] === 'number') {
           next(file, loc);
         }
@@ -512,18 +503,6 @@ var TpApp = {
     },
     createMarkerFromPhoto: function(photo, id) {
       var markerColor = '#F65857';
-
-      // switch (photo.status) {
-      //   case PHOTO_STATUS_ACTIVE:
-      //     markerColor = '#7CB9FC';
-      //     break;
-      //   case PHOTO_STATUS_HOVER:
-      //     markerColor = '#cccccc';
-      //     break;
-      //   default:
-      //     markerColor = '#f65857';
-      //     break;
-      // }
 
       if (typeof TpApp.cache.activePhoto !== 'undefined' && TpApp.cache.activePhoto === id) {
         markerColor = '#7CB9FC';
@@ -623,6 +602,11 @@ var TpApp = {
 };
 
 var Helpers = {
+  log : function() {
+    if (typeof console !== 'undefined' && typeof console.log === 'function') {
+      console.log.apply(console, arguments);
+    }
+  },
   detection: {
     hasFileAPI : function() {
       return window.FileList && "ondrop" in document.createElement('div');
@@ -657,7 +641,6 @@ var Helpers = {
     },
     prettyCoords: function(coords, hideSeconds) {
       var c = Helpers.gps.decToCoords(coords);
-      //console.log('prettyCoords:', coords , '=>', c);
       return [
         c[0].toFixed(0) + '°',
         c[1].toFixed(0) + "'",
