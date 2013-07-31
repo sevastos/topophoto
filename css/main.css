@@ -872,8 +872,8 @@ a {
     background-color: #eee;
 }
 .photolist ul li.active {
-    background-color: #7CB9FC;
-    text-shadow: 1px 1px 1px rgba(255,255,255,0.2);
+    color: #eee;
+    background-color: #5EA8F8;
 }
 .photolist-img-wrap {
     width: 36%;
@@ -902,6 +902,12 @@ a {
     white-space: nowrap;
     color: #666;
 }
+
+.photolist ul li.active .photolist-size,
+.photolist ul li.active .photolist-coords {
+    color: #eee;
+}
+
 
 .photolist-info span span {
     vertical-align: -1px;

@@ -4,22 +4,6 @@
 var GEOLAT = 0;
 var GEOLON = 1;
 
-var PHOTO_STATUS_DEFAULT = 0;
-var PHOTO_STATUS_ACTIVE = 1;
-var PHOTO_STATUS_HOVER = 2;
-
-
-var DIMS = ['lat', 'lon', 'lan'];
-var DIMS2 = ['geolan', 'geolon', 'geolat'];
-var DIMAP = {
-    'lat': 'lat',
-    'lon': 'lon',
-    'lan': 'lat',
-    'geolat': 'lat',
-    'geolan': 'lat',
-    'geolon': 'lon'
-};
-
 // Multi-class manipulation to avoid browser inconsistencies
 // https://gist.github.com/sevastos/6123053
 ['add', 'remove'].forEach(function(action) {
@@ -29,98 +13,6 @@ var DIMAP = {
     };
   }  
 });
-
-function getFlickrPics(opts){
-    var tags = (opts['text']?opts['text']+',':'')+encodeURIComponent('geo:lon');
-    //var pic= $("#box").val();
-    // geo:lat= geotagged comma delimited
-    var requestUrl = 'http://api.flickr.com/services/feeds/photos_public.gne?tags='
-                   + tags + "&tagmode=all&format=json&jsoncallback=?";
-
-    var extraInfo = ['geo', 'url_sq', 'url_m', 'path_alias'];
-
-    // Extra search params
-    var params = [];
-    if (opts && opts['text']) {
-        params.push('text=' + encodeURIComponent(opts['text']));
-    }
-    if (opts && opts['lat'] && opts['lon']) {
-        params.push('lat=' + opts['lat']);
-        params.push('lon=' + opts['lon']);
-        params.push('radius=' + (opts['radius'] || 32));
-    }
-
-    if (params.length > 0) {
-        params = params.join('&') + '&';
-    } else {
-        params = '';
-    }
-
-    // Flickr commons license only
-    var is_commons = 'true';
-
-    var requestUrl = 'http://ycpi.api.flickr.com/services/rest/?method=flickr.photos.search&api_key=c7932da5b1a01a6c4ce363ff6077090e&'+params+'has_geo=1&is_commons='+is_commons+'&extras='+extraInfo.join(',')+'&format=json&jsoncallback=?';
-
-    $.getJSON(requestUrl, handleFlickrPics)
-};
-
-function handleFlickrPics(pics) {
-    var flickrPics = {};
-    var flickrPicsIds = [];
-
-    if (!pics || !pics.photos || !pics.photos.photo) {
-        alert('No photos');
-        Helpers.log(pics);
-        return;
-    } 
-
-    $.each(pics.photos.photo, function(index, pic) {
-        var id = pic.id;
-        var url = 'http://www.flickr.com/photos/' + (pic.url_path || pic.owner) + '/' + id + '/';
-        flickrPicsIds.push(id);
-        flickrPics[id] = {
-            item: pic,
-            url: url,
-            lat: pic.latitude,
-            lon: pic.longitude
-        };
-        addPhoto(id, url, pic.url_sq, pic.url_m, pic.latitude, pic.longitude, pic.title);
-    });
-
-    refreshMapMarkers();
-}
-
-function addPhoto(id, url, thumb, img, lat, lon, title) {
-    // check img = uri || data ?
-
-    // add marker
-    photoLib[id] = {
-        type: 'Feature',
-        geometry: {
-            type: 'Point',
-            coordinates: [lon, lat]
-        },
-        properties: {
-            'marker-color': '#f65857',
-            //'marker-symbol': 'star-stroked',
-            'title': (title || id), // + ' (' + [lon, lat].join(',') + ')',
-            'image': img,
-            'thumb': thumb,
-            'url': url || ''
-        }
-    };
-
-}
-
-function refreshMapMarkers(data) {
-    Helpers.log('refreshed');
-    map.markerLayer.setGeoJSON({
-        type: 'FeatureCollection',
-        features: $.map(data || photoLib, function(k, v) {
-                      return [k];
-                  })
-    });
-}
 
 // APP
 var photoLib = {};
@@ -137,9 +29,10 @@ map.on('ready', function() {
 });
 
 map.markerLayer.on('click', function(e) {
+  e.layer.unbindPopup();
   var id = e.layer.feature.properties.id;
-  var photoEl = document.getElementById('photo-' + id);
   TpApp.cache.activePhoto = id;
+  var photoEl = document.getElementById('photo-' + id);
   TpApp.ui.scrollTo(id, 1000);
 
   [].forEach.call(
@@ -158,14 +51,11 @@ map.markerLayer.on('click', function(e) {
   var zoom = map.getZoom();
   zoom = (zoom > 6 ? zoom : 6);
   var latlng = e.layer.getLatLng();
-  latlng = {
-      lat: latlng.lat + 2,
-      lng: latlng.lng
-  };
-  map.setView(latlng, zoom);
+
+  map.setView(latlng, zoom, {animate: true});
 
   TpApp.map.compile();
-
+  
 });
 
 map.markerLayer.on('mouseover', function(e) {
@@ -173,53 +63,11 @@ map.markerLayer.on('mouseover', function(e) {
   var photoEl = document.getElementById('photo-' + id);
   TpApp.ui.scrollTo(id, 1000);
   photoEl.classList.add('hover');  
-
-
-    //e.layer.openPopup();
-    // domCache['thumbtip-img']
-    //     .attr('src', e.layer.feature.properties.thumb);
-    // domCache['thumbtip']
-    //     .finish()
-    //     .delay(150)
-    //     .fadeIn();
 });
+
 map.markerLayer.on('mouseout', function(e) {
   var photoEl = document.getElementById('photo-' + e.layer.feature.properties.id);
   photoEl.classList.remove('hover');
-});
-map.on('popupclose', function(e) {
-  delete TpApp.cache.activePhoto;
-  [].forEach.call(
-    document.querySelectorAll('.photolist li.active'), 
-    function(el){
-      el.classList.removeMany('active', 'hover');
-    }
-  );
-  TpApp.map.compile();
-});
-// Add custom popups to each using our custom feature properties
-map.markerLayer.on('layeradd', function(e) {
-    var marker = e.layer,
-        feature = marker.feature;
-
-
-
-
-    return; //flickr only follows
-    // Create custom popup content
-    var popupContent =  '<a target="_blank" rel="external" class="popup" href="' + feature.properties.url + '">' +
-                            '<img class="animated" src="' + feature.properties.image + '">' +
-                        '   <br/><span>' + feature.properties.title + '</span>' +
-                        '</a>';
-
-    // http://leafletjs.com/reference.html#popup
-    marker.bindPopup(popupContent,{
-        closeButton: false,
-        minWidth: 260
-    });
-    // domCache['thumbtip']
-    //     .finish()
-    //     .fadeOut();
 });
 
 // Photo wrapper object
@@ -287,6 +135,7 @@ var TpApp = {
   },
   // Vars
   _photosStore: [],
+  _markersStore: [],
   // Drag and rop
   dnd: {
     dragOutTimer: null,
@@ -487,19 +336,24 @@ var TpApp = {
   // Map
   map: {
     compile: function() {
-      var lib = [];
+      var lib = TpApp._markersStore || [];
       for (var id = TpApp._photosStore.length - 1; id >= 0; id--) {
         var photo = TpApp._photosStore[id];
-        lib.push(TpApp.map.createMarkerFromPhoto(photo, id));
+        if (typeof photo['marker'] === 'undefined') {
+          photo['marker'] = TpApp.map.createMarkerFromPhoto(photo, id);  
+          lib[id] = photo['marker'];
+        } else {
+          if (typeof TpApp.cache.activePhoto !== 'undefined' && TpApp.cache.activePhoto === id) {
+            photo['marker']['properties']['marker-color'] = '#7CB9FC';
+          } else {
+            photo['marker']['properties']['marker-color'] = '#F65857';
+          }
+        }
       }
 
-      map.markerLayer.setGeoJSON({
-        type: 'FeatureCollection',
-        features: $.map(lib, function(k, v) {
-                    return [k];
-                  })
-      });
-
+      if (TpApp._markersStore.length !== 0) {
+        map.markerLayer.setGeoJSON(lib);  
+      }
     },
     createMarkerFromPhoto: function(photo, id) {
       var markerColor = '#F65857';
@@ -697,27 +551,6 @@ $(document).ready(function(){
 
   TpApp.traditionalUpload.init();
 
-  //TpApp.cache['thumbtip'] = document.getElementById('thumbtip');
-  //TpApp.cache['thumbtip-img'] = document.querySelector('#thumbtip img');
-  
-  // Flickr form
-  $('#search').submit(function(e){
-    e.preventDefault();
-    photoLib = {};
-
-    var opts = {
-        text: $('#q').val()
-    };
-
-    var mapLatLng = map.getCenter();
-    if (map.getZoom() > 10) {
-        opts.lat = mapLatLng.lat;
-        opts.lon = mapLatLng.lng;
-        opts.radius = 32;
-    }
-    getFlickrPics(opts);
-    return false;
-  });
 
   // Drag and drop
   document.addEventListener("dragenter", TpApp.dnd.handleEnter, false);
@@ -727,9 +560,5 @@ $(document).ready(function(){
           .addEventListener("dragover", TpApp.dnd.handleOver, false);
   TpApp.cache['dropzone']
           .addEventListener('drop', TpApp.dnd.handleDrop, false);
-
-
-
-
 
 });
