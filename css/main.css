@@ -716,12 +716,17 @@ header h1 {
     -ms-transition: 0.4s all;
     -o-transition: 0.4s all;
     transition: 0.4s all;
+
+    cursor: default;
+}
+.photolist ul li:hover {
+    background-color: #eee;
 }
 .photolist ul li.hover {
     background-color: #eee;
 }
 .photolist ul li.active {
-    background-color: #D4EBFA;
+    background-color: #7CB9FC;
 }
 .photolist-img-wrap {
     width: 36%;
@@ -747,6 +752,18 @@ header h1 {
     display: block;
     font-size: 10px;
 }
+.photolist-coords {
+    display: block;
+    font-size: 10px;
+    white-space: nowrap;
+}
+
+
+.photolist-info span span {
+    vertical-align: -1px;
+    padding-right: 3px;
+}
+
 
 /*      |######|
  *      |######|

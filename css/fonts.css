@@ -27,7 +27,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-images, .icon-location, .icon-location-2, .icon-compass, .icon-map, .icon-clock, .icon-busy, .icon-spinner, .icon-cog, .icon-info, .icon-info-2, .icon-github, .icon-github-2, .icon-twitter, .icon-twitter-2, .icon-twitter-3, .icon-remove, .icon-upload, .icon-hammer, .icon-upload-2, .icon-loop, .icon-loop-2, .icon-flickr, .icon-flickr-2, .icon-flickr-3, .icon-target, .icon-search, .icon-binoculars {
+.icon-images, .icon-location, .icon-location-2, .icon-compass, .icon-map, .icon-clock, .icon-busy, .icon-spinner, .icon-cog, .icon-info, .icon-info-2, .icon-github, .icon-github-2, .icon-twitter, .icon-twitter-2, .icon-twitter-3, .icon-remove, .icon-upload, .icon-hammer, .icon-upload-2, .icon-loop, .icon-loop-2, .icon-flickr, .icon-flickr-2, .icon-flickr-3, .icon-target, .icon-search, .icon-binoculars, .icon-earth, .icon-globe, .icon-disk, .icon-checkmark, .icon-close, .icon-IcoMoon, .icon-camera, .icon-download, .icon-folder-open, .icon-storage, .icon-screen, .icon-mobile, .icon-tablet, .icon-tv, .icon-zoom-in, .icon-zoom-out, .icon-cog-2, .icon-cogs, .icon-wrench, .icon-lab, .icon-fire, .icon-download-2, .icon-upload-3, .icon-download-3, .icon-pencil, .icon-laptop, .icon-remove-2 {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -120,4 +120,85 @@ you can use the generic selector below, but it's slower:
 }
 .icon-binoculars:before {
 	content: "\e01b";
+}
+.icon-earth:before {
+	content: "\e01c";
+}
+.icon-globe:before {
+	content: "\e01d";
+}
+.icon-disk:before {
+	content: "\e01e";
+}
+.icon-checkmark:before {
+	content: "\e01f";
+}
+.icon-close:before {
+	content: "\e020";
+}
+.icon-IcoMoon:before {
+	content: "\e021";
+}
+.icon-camera:before {
+	content: "\e022";
+}
+.icon-download:before {
+	content: "\e023";
+}
+.icon-folder-open:before {
+	content: "\e024";
+}
+.icon-storage:before {
+	content: "\e025";
+}
+.icon-screen:before {
+	content: "\e026";
+}
+.icon-mobile:before {
+	content: "\e027";
+}
+.icon-tablet:before {
+	content: "\e028";
+}
+.icon-tv:before {
+	content: "\e029";
+}
+.icon-zoom-in:before {
+	content: "\e02a";
+}
+.icon-zoom-out:before {
+	content: "\e02b";
+}
+.icon-cog-2:before {
+	content: "\e02c";
+}
+.icon-cogs:before {
+	content: "\e02d";
+}
+.icon-wrench:before {
+	content: "\e02e";
+}
+.icon-lab:before {
+	content: "\e02f";
+}
+.icon-fire:before {
+	content: "\e030";
+}
+.icon-download-2:before {
+	content: "\e031";
+}
+.icon-upload-3:before {
+	content: "\e032";
+}
+.icon-download-3:before {
+	content: "\e033";
+}
+.icon-pencil:before {
+	content: "\e034";
+}
+.icon-laptop:before {
+	content: "\e035";
+}
+.icon-remove-2:before {
+	content: "\e036";
 }

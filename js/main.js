@@ -4,6 +4,9 @@
 var GEOLAT = 0;
 var GEOLON = 1;
 
+var PHOTO_STATUS_DEFAULT = 0;
+var PHOTO_STATUS_ACTIVE = 1;
+var PHOTO_STATUS_HOVER = 2;
 
 
 var DIMS = ['lat', 'lon', 'lan'];
@@ -131,15 +134,17 @@ map.on('error', function(e) {
 map.markerLayer.on('click', function(e) {
   var id = e.layer.feature.properties.id;
   var photoEl = document.getElementById('photo-' + id);
+  TpApp.cache.activePhoto = id;
   TpApp.ui.scrollTo(id, 1000);
 
   [].forEach.call(
     document.querySelectorAll('.photolist li.active'), 
     function(el){
-      el.classList.remove('active');
+      el.classList.remove('active', 'hover');
     }
   );
 
+  photoEl.classList.remove('hover');
   setTimeout(function() {
     photoEl.classList.add('active');
   }, 10);
@@ -153,6 +158,8 @@ map.markerLayer.on('click', function(e) {
       lng: latlng.lng
   };
   map.setView(latlng, zoom);
+
+  TpApp.map.compile();
 
 });
 
@@ -181,12 +188,14 @@ map.markerLayer.on('mouseout', function(e) {
     //     .fadeOut();
 });
 map.on('popupclose', function(e) {
+  delete TpApp.cache.activePhoto;
   [].forEach.call(
     document.querySelectorAll('.photolist li.active'), 
     function(el){
-      el.classList.remove('active');
+      el.classList.remove('active', 'hover');
     }
   );
+  TpApp.map.compile();
 });
 // Add custom popups to each using our custom feature properties
 map.markerLayer.on('layeradd', function(e) {
@@ -234,7 +243,15 @@ TpPhoto.prototype.generateDomEl = function(next) {
   var html = [
     '<div class="photolist-info">',
     ' <span class="photolist-name">' + Helpers.text.safe(this.file.name) + '</span>',
-    ' <span class="photolist-size">' + Helpers.text.smartBytes(this.file.size) + '</span>',
+    ' <span class="photolist-size">' +
+     '<span class="icon-storage"></span>' +
+      Helpers.text.smartBytes(this.file.size) +
+    '</span>',
+    ' <span class="photolist-coords">' +
+     '<span class="icon-location-2"></span>' +
+      Helpers.gps.prettyCoords(this.loc[GEOLAT]) + ' &nbsp; ' +
+      Helpers.gps.prettyCoords(this.loc[GEOLON]) +
+    ' </span>' +
     '</div>'//,
 //    '<div class="photolist-img-wrap">',
 //    ' <img src="http://lorempixel.com/500/212/?176" class="photolist-img">',
@@ -244,18 +261,16 @@ TpPhoto.prototype.generateDomEl = function(next) {
   loadImage(
     this.file,
     function (img) {
-      console.log('IMG', img);
+      //console.log('IMG', img);
       if(img.type === "error") {
           console.log("Error loading image " + img);
       } else {
           img.classList.add('photolist-img');
-          //html.push(img.innerHTML, '</div>');
           el.innerHTML = html.join('');
           var imgWrap = document.createElement('div');
           imgWrap.classList.add('photolist-img-wrap');
           imgWrap.appendChild(img);
           el.appendChild(imgWrap);
-          console.log('generated: ', el)
           next(el);
       }
     },
@@ -320,7 +335,6 @@ var TpApp = {
         console.log('drag leave!!, doc [dropzone]', e.toElement.id); //, e
       }
     }
-
   },
   // Files
   file: {
@@ -333,10 +347,9 @@ var TpApp = {
     },
     // each
     process: function(file) {
-      console.log('Process file: ', file.name, file);
+      //console.log('Process file: ', file.name, file);
       TpApp.photo.getLatLng(file, function(file, loc) {
         TpApp.photo.addToList(new TpPhoto(file, loc));
-        console.log('COMPILING...');
         TpApp.map.compile();
       });
     }
@@ -353,6 +366,9 @@ var TpApp = {
       console.log('%cadded to internal array', 'font-weight: bold');
       var index = TpApp._photosStore.push(photo) - 1;
       return [true, index];
+    },
+    get: function(id) {
+      return TpApp._photosStore[id];
     },
     /**
      * Check the existance of a photo
@@ -454,12 +470,30 @@ var TpApp = {
       map.markerLayer.setGeoJSON({
         type: 'FeatureCollection',
         features: $.map(lib, function(k, v) {
-                      return [k];
+                    return [k];
                   })
       });
 
     },
     createMarkerFromPhoto: function(photo, id) {
+      var markerColor = '#F65857';
+
+      // switch (photo.status) {
+      //   case PHOTO_STATUS_ACTIVE:
+      //     markerColor = '#7CB9FC';
+      //     break;
+      //   case PHOTO_STATUS_HOVER:
+      //     markerColor = '#cccccc';
+      //     break;
+      //   default:
+      //     markerColor = '#f65857';
+      //     break;
+      // }
+
+      if (typeof TpApp.cache.activePhoto !== 'undefined' && TpApp.cache.activePhoto === id) {
+        markerColor = '#7CB9FC';
+      }
+
       return {
         type: 'Feature',
         geometry: {
@@ -468,7 +502,7 @@ var TpApp = {
         },
         properties: {
           'id': id,
-          'marker-color': '#f65857',
+          'marker-color': markerColor,
           'title': photo.file.name + ' #' + (id + 1),
           'lon': photo.loc[GEOLON],
           'lat': photo.loc[GEOLAT]
@@ -566,6 +600,22 @@ var Helpers = {
         degrees *= -1;
       }
       return degrees;
+    },
+    decToCoords: function(dec) {
+      return [
+        parseInt(dec),
+        (dec = dec % 1 * 60, parseInt(dec)),
+        dec % 1 * 60
+      ];
+    },
+    prettyCoords: function(coords, hideSeconds) {
+      var c = Helpers.gps.decToCoords(coords);
+      console.log('prettyCoords:', coords , '=>', c);
+      return [
+        c[0].toFixed(0) + '°',
+        c[1].toFixed(0) + "'",
+        (hideSeconds ? '' : c[2].toFixed(0) + '"')
+      ].join(' ');
     }
   },
   text: {
