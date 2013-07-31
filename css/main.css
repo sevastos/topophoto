@@ -828,6 +828,10 @@ a {
     margin: 15px 0 15px;
 }
 
+#upload-more {
+    width: 220px;
+}
+
 .photolist {
     padding: 0;
     overflow-y: auto;
@@ -869,6 +873,7 @@ a {
 }
 .photolist ul li.active {
     background-color: #7CB9FC;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.2);
 }
 .photolist-img-wrap {
     width: 36%;
