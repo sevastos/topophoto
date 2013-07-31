@@ -88,6 +88,18 @@ TpPhoto.prototype.generateDomEl = function(next) {
   var el = document.createElement('li');
   el.classList.addMany('photolist-item', 'animated', 'slideDownTiny');
 
+  el.addEventListener('click', function(e) {
+    if(e.stopPropagation) {
+      e.stopPropagation();
+    }
+    e.preventDefault();
+
+    var photoId = (e.target || e.srcElement).offsetParent.getAttribute('data-id');
+    if (!isNaN(photoId)) {
+      TpApp.ui.zoomToMarker(parseInt(photoId) + 1);
+    }
+  }, false);
+
   var html = [
     '<div class="photolist-info">',
     ' <span class="photolist-name">' + Helpers.text.safe(this.file.name) + '</span>',
@@ -108,11 +120,15 @@ TpPhoto.prototype.generateDomEl = function(next) {
     function (img) {
       if(img.type !== "error") {
           img.classList.add('photolist-img');
-          el.innerHTML = html.join('');
+          //el.innerHTML = html.join('');
           var imgWrap = document.createElement('div');
           imgWrap.classList.add('photolist-img-wrap');
           imgWrap.appendChild(img);
-          el.appendChild(imgWrap);
+          var anchor = document.createElement('a');
+          anchor.href = '#';
+          anchor.innerHTML = html.join('');
+          anchor.appendChild(imgWrap);
+          el.appendChild(anchor);
           next(el);
       }
     },
@@ -295,7 +311,8 @@ var TpApp = {
           TpApp.cache.photolist.classList.add('expandExtra');
           setTimeout(function(el, id) {
             TpApp.cache.photolist.classList.remove('expandExtra');
-            el.id = 'photo-' + id;
+            el.setAttribute('id', 'photo-' + id);
+            el.setAttribute('data-id', id);
             el.classList.add('animated');
             TpApp.cache.photolist.appendChild(el);
             TpApp.ui.scrollTo(id, 1000);
@@ -380,6 +397,10 @@ var TpApp = {
   },
   // UI
   ui: {
+    zoomToMarker: function(id) {
+      var el = document.querySelector('#map .leaflet-marker-icon[title$="#'+parseInt(id)+'"]');
+      Helpers.ui.simulateClick(el);
+    },
     showMap: function() {
       TpApp.cache['welcomemsg'].classList.add('hidden');
       TpApp.cache['map'].classList.addMany('animated', 'mapLoaded');
@@ -526,7 +547,7 @@ var Helpers = {
     // http://stackoverflow.com/a/5658925/1139682 by Adam
     simulateClick: function(elId) {
         var evt;
-        var el = document.getElementById(elId);
+        var el = (typeof elId === 'string' ? document.getElementById(elId) : elId);
         if (document.createEvent) {
             evt = document.createEvent("MouseEvents");
             evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
