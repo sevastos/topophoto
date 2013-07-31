@@ -717,7 +717,7 @@ footer {
 }
 
 a {
-    color: #636363;
+    color: #5D5959;
 }
 
 /*footer*/ a {
@@ -756,43 +756,11 @@ a {
     left: 30px;
     min-height: 100px;
 }
-.photolist ul {
-/*    -webkit-transition: 1s;
-    -moz-transition: 1s;
-    -ms-transition: 1s;
-    -o-transition: 1s;
-    transition: 1s;
 
-    -webkit-transition: cubic-bezier(0.97, 1.59, 0.01, 1.09);
-    -moz-transition: cubic-bezier(0.97, 1.59, 0.01, 1.09);
-    -ms-transition: cubic-bezier(0.97, 1.59, 0.01, 1.09);
-    -o-transition: cubic-bezier(0.97, 1.59, 0.01, 1.09);
-    transition: cubic-bezier(0.97, 1.59, 0.01, 1.09);*/
-}
 #map {
     margin-bottom: 120px;
     margin-right: 0;
 }
-/*
-#map::before {
-    content: '';
-    position: absolute;
-    display: block;
-    width: 100%;
-    height: 10px;
-    background-color: rgba(255,255,255,0.5);
-    z-index: 500;
-}
-#map::after {
-    content: '';
-    position: absolute;
-    display: block;
-    width: 10px;
-    height: 100%;
-    background-color: rgba(255,255,255,0.5);
-    z-index: 500;
-}*/
-
 
 .photolist.active {
     box-sizing: border-box;
