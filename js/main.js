@@ -187,11 +187,6 @@ map.markerLayer.on('mouseover', function(e) {
 map.markerLayer.on('mouseout', function(e) {
   var photoEl = document.getElementById('photo-' + e.layer.feature.properties.id);
   photoEl.classList.remove('hover');
-
-    //e.layer.closePopup();
-    // domCache['thumbtip']
-    //     .finish()
-    //     .fadeOut();
 });
 map.on('popupclose', function(e) {
   delete TpApp.cache.activePhoto;
@@ -258,19 +253,13 @@ TpPhoto.prototype.generateDomEl = function(next) {
       Helpers.gps.prettyCoords(this.loc[GEOLAT]) + ' &nbsp; ' +
       Helpers.gps.prettyCoords(this.loc[GEOLON]) +
     ' </span>' +
-    '</div>'//,
-//    '<div class="photolist-img-wrap">',
-//    ' <img src="http://lorempixel.com/500/212/?176" class="photolist-img">',
-//    '</div>'
+    '</div>'
   ];
 
   loadImage(
     this.file,
     function (img) {
-      //console.log('IMG', img);
-      if(img.type === "error") {
-          //console.log("Error loading image " + img);
-      } else {
+      if(img.type !== "error") {
           img.classList.add('photolist-img');
           el.innerHTML = html.join('');
           var imgWrap = document.createElement('div');
@@ -288,7 +277,6 @@ TpPhoto.prototype.generateDomEl = function(next) {
     }
   );
 
-  //return el;
 }
 
 
@@ -328,10 +316,9 @@ var TpApp = {
     handleOver: function(e) {
       e.stopPropagation();
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+      e.dataTransfer.dropEffect = 'copy';
     },
     handleEnter: function(e) {
-      //console.log('drag enter!!, doc'); //, e
       if (TpApp.dnd.dragOutTimer) {
         clearTimeout(TpApp.dnd.dragOutTimer);
       }
@@ -340,13 +327,10 @@ var TpApp = {
     },
     handleLeave: function(e) {
       if (e.toElement.id === 'photo-dropzone') {
-        //console.log('drag leave!!, doc [not dropzone]', e.toElement.id); //, e
         TpApp.dnd.dragOutTimer = setTimeout(function() {
           TpApp.cache['body'].classList.remove('dragging');
           TpApp.cache['dropzone'].classList.remove('hover');
         }, 100);           
-      } else {
-        //console.log('drag leave!!, doc [dropzone]', e.toElement.id); //, e
       }
     }
   },
@@ -378,8 +362,10 @@ var TpApp = {
   file: {
     // all
     processAll: function(files) {
-      var atLeastOne = false;
       for (var i = 0, f; f = files[i]; i++) {
+        if (['jpg', 'jpeg'].indexOf(f.name.split('.').pop().toLowerCase()) === -1) {
+          continue;
+        }
         // Read the File objects in this FileList.
         TpApp.file.process(f);
       }
@@ -387,27 +373,28 @@ var TpApp = {
     // each
     process: function(file) {
       //console.log('Process file: ', file.name, file);
-      TpApp.photo.getLatLng(file, function(file, loc) {
-        if (TpApp.cache['atLeastOneGood'] === false) {
-          TpApp.ui.showMap();
-          TpApp.cache['atLeastOneGood'] = true;
-        }
+      try {
+        TpApp.photo.getLatLng(file, function(file, loc) {
+          if (TpApp.cache['atLeastOneGood'] === false) {
+            TpApp.ui.showMap();
+            TpApp.cache['atLeastOneGood'] = true;
+          }
 
-        TpApp.photo.addToList(new TpPhoto(file, loc));
-        TpApp.map.compile();
-      });
+          TpApp.photo.addToList(new TpPhoto(file, loc));
+          TpApp.map.compile();
+        });
+      } catch(e) {
+        console.log('Invalid photo', e);
+      }
     }
   },
   // Manage the internal array of photos
   photosStore: {
     add: function(photo) {
       var index = TpApp.photosStore.has(photo);
-      //console.log('found file', index)
-
       if (index !== false) {
         return [false, index];
       }
-      //console.log('%cadded to internal array', 'font-weight: bold');
       var index = TpApp._photosStore.push(photo) - 1;
       return [true, index];
     },

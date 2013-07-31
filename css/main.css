@@ -879,8 +879,8 @@ a {
     width: 36%;
     height: 100%;
     box-sizing: border-box;
-    margin-left: 6%;
-    margin-right: 5px;
+    margin-left: 3%;
+    margin-right: 1%;
     overflow: hidden;
     position: relative;
 }
@@ -891,7 +891,7 @@ a {
 }
 .photolist-info {
     float: right;
-    width: 60%;
+    width: 58%;
     margin-left: 1%;
     box-sizing: border-box;
 }

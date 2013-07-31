@@ -38,6 +38,9 @@ js/load-image.min.js
 //a.tiles.mapbox.com/v3/sevm.map-pfi9rnav/markers.geojson
 
 # img
+//a.tiles.mapbox.com/v3/marker/pin-m+F65857.png
+//a.tiles.mapbox.com/v3/marker/pin-m+7CB9FC.png
+
 //c.tiles.mapbox.com/v3/sevm.map-pfi9rnav/2/1/1.png
 //d.tiles.mapbox.com/v3/sevm.map-pfi9rnav/2/2/1.png
 //a.tiles.mapbox.com/v3/sevm.map-pfi9rnav/2/2/2.png
