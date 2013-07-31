@@ -597,6 +597,82 @@ input[type=submit] {
     box-shadow: 0px 1px 1px rgba(0,0,0,0.3);
 }
 
+.welcome-msg {
+    position: fixed;
+    top: 80px;
+    left: 30px;
+    right: 30px;
+    bottom: 50px;
+    text-align: center;
+    box-sizing: border-box;
+    padding-top: 20%;
+    font-size: 34px;
+    line-height: 41px;
+    text-shadow: 0px 1px 1px #000;
+    text-shadow: 0px 1px 1px rgba(0, 0, 0, .69);
+    color: #94BAD8;
+
+    cursor: hand;
+    cursor: copy;
+    z-index: 25;
+
+    -webkit-transition: 0.4s opacity;
+    -moz-transition: 0.4s opacity;
+    -ms-transition: 0.4s opacity;
+    -o-transition: 0.4s opacity;
+    transition: 0.4s opacity;
+}
+
+.dragging .welcome-msg {
+    opacity: 0;
+}
+
+.welcome-msg a {
+    cursor: copy;
+    color: #86A6CE;
+    text-decoration: none;
+}
+.welcome-msg .icon-earth {
+    text-shadow: none;
+    vertical-align: -5px;
+    color: #64A890;
+    margin-right: 4px;
+    display: inline-block;
+}
+
+.welcome-msg .icon-earth.earthRotation {
+    -webkit-animation-duration:45s;
+    -moz-animation-duration:45s;
+    -ms-animation-duration:45s;
+    -o-animation-duration:45s;
+    animation-duration:45s;
+
+    -webkit-animation-timing-function: linear;
+    -moz-animation-timing-function: linear;
+    -ms-animation-timing-function: linear;
+    -o-animation-timing-function: linear;
+    animation-timing-function: linear;
+
+    -webkit-animation-iteration-count: infinite;
+    -moz-animation-iteration-count: infinite;
+    -ms-animation-iteration-count: infinite;
+    -o-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+}
+
+
+/* support */
+.no-FileAPI .needs-FileAPI {
+    display: none;
+}
+.fallback-FileAPI {
+    display: none;
+}
+.no-FileAPI .fallback-FileAPI {
+    display: inline;
+}
+
+
 
 /* layout v2 */
 header {
@@ -626,11 +702,11 @@ a {
     color: #636363;
 }
 
-footer a {
+/*footer*/ a {
     text-decoration: none;
 }
 
-footer a:hover {
+/*footer*/ a:hover {
     border-bottom: 1px dashed #999999;
 }
 
@@ -863,7 +939,7 @@ footer a:hover {
     margin: 0;
 
     text-align: center;
-    padding-top: 25%;
+    padding-top: 30%;
     box-sizing: border-box;
 
     letter-spacing: 1px;
@@ -1272,6 +1348,35 @@ footer a:hover {
 }
 
 
+/* fadeIn */
+@-webkit-keyframes fadeIn {
+    0% {    opacity: 0; }    
+    100% {  opacity: 1; }
+}
+@-moz-keyframes fadeIn {
+    0% {    opacity: 0; }    
+    100% {  opacity: 1; }
+}
+@-o-keyframes fadeIn {
+    0% {    opacity: 0; }    
+    100% {  opacity: 1; }
+}
+@keyframes fadeIn {
+    0% {    opacity: 0; }
+    100% {  opacity: 1; }
+}
+
+.fadeIn {
+    -webkit-animation-name: fadeIn;
+    -moz-animation-name: fadeIn;
+    -o-animation-name: fadeIn;
+    animation-name: fadeIn;
+
+    -webkit-animation-duration: 1s;
+    -moz-animation-duration: 1s;
+    -o-animation-duration: 1s;
+    animation-duration: 1s;
+}
 
 
 /* map load animation */
@@ -1396,5 +1501,49 @@ footer a:hover {
 
 
 
+/* earthRotation */
+@-webkit-keyframes earthRotation {
+    0%, 100% {
+        -webkit-transform: rotate(-340deg);
+    }
+    
+    50% {
+        -webkit-transform: rotate(-377deg);
+    }
+}
+@-moz-keyframes earthRotation {
+    0%, 100% {
+        -moz-transform: rotate(-340deg);
+    }
+    
+    50% {
+        -moz-transform: rotate(-377deg);
+    }
+}
+@-o-keyframes earthRotation {
+    0%, 100% {
+        -o-transform: rotate(-340deg);
+    }
+    
+    50% {
+        -o-transform: rotate(-377deg);
+    }
+}
+@keyframes earthRotation {
+    0%, 100% {
+        transform: rotate(-340deg);
+    }
+    
+    50% {
+        transform: rotate(-377deg);
+    }
+}
+
+.earthRotation {
+    -webkit-animation-name: earthRotation;
+    -moz-animation-name: earthRotation;
+    -o-animation-name: earthRotation;
+    animation-name: earthRotation;
+}
 
 

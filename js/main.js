@@ -133,7 +133,7 @@ map.on('ready', function() {
     imagesLoaded(document.querySelectorAll('.leaflet-tile'))
         .on('always', function(instance) {
             console.log('images loaded');
-            document.getElementById('map').classList.addMany('animated', 'mapLoaded');
+            document.getElementById('map').classList.add('ready'); // 'animated', 'mapLoaded');
         });
 });
 
@@ -306,8 +306,12 @@ var TpApp = {
   dnd: {
     dragOutTimer: null,
     handleDrop: function(e) {
+      TpApp.cache['body'].classList.remove('dragging');
       TpApp.cache['dropzone'].classList.remove('hover');     
-      console.log(e);
+      TpApp.cache['welcomemsg'].classList.add('hidden');
+      //show map
+      TpApp.cache['map'].classList.addMany('animated', 'mapLoaded');
+
       if (e.stopPropagation) {
         e.stopPropagation();
       }
@@ -333,13 +337,15 @@ var TpApp = {
       if (TpApp.dnd.dragOutTimer) {
         clearTimeout(TpApp.dnd.dragOutTimer);
       }
+      TpApp.cache['body'].classList.add('dragging');
       TpApp.cache['dropzone'].classList.add('hover');
     },
     handleLeave: function(e) {
       if (e.toElement.id === 'photo-dropzone') {
         console.log('drag leave!!, doc [not dropzone]', e.toElement.id); //, e
         TpApp.dnd.dragOutTimer = setTimeout(function() {
-            TpApp.cache['dropzone'].classList.remove('hover');
+          TpApp.cache['body'].classList.remove('dragging');
+          TpApp.cache['dropzone'].classList.remove('hover');
         }, 100);           
       } else {
         console.log('drag leave!!, doc [dropzone]', e.toElement.id); //, e
@@ -594,6 +600,11 @@ var TpApp = {
 };
 
 var Helpers = {
+  detection: {
+    hasFileAPI : function() {
+      return window.FileList && "ondrop" in document.createElement('div');
+    }
+  },
   gps: {
     /**
      * Convert geo cords to decimal degrees
@@ -654,9 +665,16 @@ var Helpers = {
 
 // INIT APP
 $(document).ready(function(){
-
+  TpApp.cache['body'] = document.body;
   TpApp.cache['photolist'] = document.getElementById('photolist');
-  TpApp.cache['dropzone'] = document.getElementById('photo-dropzone'); 
+  TpApp.cache['dropzone'] = document.getElementById('photo-dropzone');
+  TpApp.cache['welcomemsg'] = document.getElementById('welcome-msg');
+  TpApp.cache['map'] = document.getElementById('map');
+
+  if (!Helpers.detection.hasFileAPI()) {
+    TpApp.cache['body'].classList.add('no-FileAPI');
+  }
+
   //TpApp.cache['thumbtip'] = document.getElementById('thumbtip');
   //TpApp.cache['thumbtip-img'] = document.querySelector('#thumbtip img');
   
