@@ -137,10 +137,6 @@ map.on('ready', function() {
         });
 });
 
-map.on('error', function(e) {
-  console.log('oopsy', e);
-});
-
 map.markerLayer.on('click', function(e) {
   var id = e.layer.feature.properties.id;
   var photoEl = document.getElementById('photo-' + id);
@@ -273,7 +269,7 @@ TpPhoto.prototype.generateDomEl = function(next) {
     function (img) {
       //console.log('IMG', img);
       if(img.type === "error") {
-          console.log("Error loading image " + img);
+          //console.log("Error loading image " + img);
       } else {
           img.classList.add('photolist-img');
           el.innerHTML = html.join('');
@@ -299,7 +295,9 @@ TpPhoto.prototype.generateDomEl = function(next) {
 // Photo lib
 var TpApp = {
   // Caching
-  cache: {},
+  cache: {
+    'atLeastOneGood': false
+  },
   // Vars
   _photosStore: [],
   // Drag and rop
@@ -307,10 +305,7 @@ var TpApp = {
     dragOutTimer: null,
     handleDrop: function(e) {
       TpApp.cache['body'].classList.remove('dragging');
-      TpApp.cache['dropzone'].classList.remove('hover');     
-      TpApp.cache['welcomemsg'].classList.add('hidden');
-      //show map
-      TpApp.cache['map'].classList.addMany('animated', 'mapLoaded');
+      TpApp.cache['dropzone'].classList.remove('hover');
 
       if (e.stopPropagation) {
         e.stopPropagation();
@@ -323,6 +318,9 @@ var TpApp = {
       }
 
       var files = e.dataTransfer.files;
+      console.log('files');
+      console.log(typeof files);
+      console.log(files);
       TpApp.file.processAll(files);
 
       return false;
@@ -333,7 +331,7 @@ var TpApp = {
       e.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
     },
     handleEnter: function(e) {
-      console.log('drag enter!!, doc'); //, e
+      //console.log('drag enter!!, doc'); //, e
       if (TpApp.dnd.dragOutTimer) {
         clearTimeout(TpApp.dnd.dragOutTimer);
       }
@@ -342,13 +340,13 @@ var TpApp = {
     },
     handleLeave: function(e) {
       if (e.toElement.id === 'photo-dropzone') {
-        console.log('drag leave!!, doc [not dropzone]', e.toElement.id); //, e
+        //console.log('drag leave!!, doc [not dropzone]', e.toElement.id); //, e
         TpApp.dnd.dragOutTimer = setTimeout(function() {
           TpApp.cache['body'].classList.remove('dragging');
           TpApp.cache['dropzone'].classList.remove('hover');
         }, 100);           
       } else {
-        console.log('drag leave!!, doc [dropzone]', e.toElement.id); //, e
+        //console.log('drag leave!!, doc [dropzone]', e.toElement.id); //, e
       }
     }
   },
@@ -356,7 +354,6 @@ var TpApp = {
     init: function() {
       //attach events
       TpApp.cache['welcomemsg'].addEventListener('click', function(e){ 
-        console.log('welcomemsg', e);
         if (e.stopPropagation) {
           e.stopPropagation();
         }
@@ -364,15 +361,24 @@ var TpApp = {
 
         TpApp.traditionalUpload.showFileDialog();
       }, true);
+      document.getElementById('upload-more').addEventListener('click', TpApp.traditionalUpload.showFileDialog);
+
+
+      TpApp.cache['uploadfallback'].addEventListener('change', TpApp.traditionalUpload.processFiles);
+
     },
     showFileDialog: function() {
-      simulateClick('upload-fallback');
+      Helpers.ui.simulateClick('upload-fallback');
+    },
+    processFiles: function() {
+      TpApp.file.processAll(TpApp.cache['uploadfallback'].files);
     }
   },
   // Files
   file: {
     // all
     processAll: function(files) {
+      var atLeastOne = false;
       for (var i = 0, f; f = files[i]; i++) {
         // Read the File objects in this FileList.
         TpApp.file.process(f);
@@ -382,6 +388,11 @@ var TpApp = {
     process: function(file) {
       //console.log('Process file: ', file.name, file);
       TpApp.photo.getLatLng(file, function(file, loc) {
+        if (TpApp.cache['atLeastOneGood'] === false) {
+          TpApp.ui.showMap();
+          TpApp.cache['atLeastOneGood'] = true;
+        }
+
         TpApp.photo.addToList(new TpPhoto(file, loc));
         TpApp.map.compile();
       });
@@ -391,12 +402,12 @@ var TpApp = {
   photosStore: {
     add: function(photo) {
       var index = TpApp.photosStore.has(photo);
-      console.log('found file', index)
+      //console.log('found file', index)
 
       if (index !== false) {
         return [false, index];
       }
-      console.log('%cadded to internal array', 'font-weight: bold');
+      //console.log('%cadded to internal array', 'font-weight: bold');
       var index = TpApp._photosStore.push(photo) - 1;
       return [true, index];
     },
@@ -443,7 +454,7 @@ var TpApp = {
   // Photos
   photo: {
     addToList: function(photo) {
-      console.log('Add to list: ', photo.file.name, photo.file);
+      //console.log('Add to list: ', photo.file.name, photo.file);
 
       var res = TpApp.photosStore.add(photo);
       var id = res[1];
@@ -478,16 +489,20 @@ var TpApp = {
           next(data, null);  
           return;
         }
-        console.log('Process getLatLng');
+        //console.log('Process getLatLng');
         var orientation = data.exif.get('Orientation');
         var loc = [];
         loc[GEOLAT] = Helpers.gps.coordsToDec(data.exif.get('GPSLatitude'), data.exif.get('GPSLatitudeRef'));
         loc[GEOLON] = Helpers.gps.coordsToDec(data.exif.get('GPSLongitude'), data.exif.get('GPSLongitudeRef'));
 
-        console.log('Exif', orientation, loc);
-        next(file, loc);
+        //console.log('Exif', orientation, loc);
+        if (typeof loc[GEOLAT] === 'number' && typeof loc[GEOLON] === 'number') {
+          next(file, loc);
+        }
+
       }, {
-        disableExifThumbnail: true
+        disableExifThumbnail: true,
+        orientation: false
       });
     }
   },
@@ -545,6 +560,10 @@ var TpApp = {
   },
   // UI
   ui: {
+    showMap: function() {
+      TpApp.cache['welcomemsg'].classList.add('hidden');
+      TpApp.cache['map'].classList.addMany('animated', 'mapLoaded');
+    },
     scrollTo: function(photoId, duration) {
       var pl = document.getElementById('photolist').offsetParent;
       var photo = document.getElementById('photo-' + photoId);
@@ -630,6 +649,9 @@ var Helpers = {
      * @return {Number} Decimal degrees 
      */
     coordsToDec: function(coords, reference) {
+      if (!coords || coords.length !== 3) {
+        return false;
+      }
       var degrees =  (coords[0] || 0)          // degrees
                   + ((coords[1] || 0) / 60)    // minutes
                   + ((coords[2] || 0) / 3600)  // seconds
@@ -648,7 +670,7 @@ var Helpers = {
     },
     prettyCoords: function(coords, hideSeconds) {
       var c = Helpers.gps.decToCoords(coords);
-      console.log('prettyCoords:', coords , '=>', c);
+      //console.log('prettyCoords:', coords , '=>', c);
       return [
         c[0].toFixed(0) + '°',
         c[1].toFixed(0) + "'",
@@ -697,6 +719,7 @@ $(document).ready(function(){
   TpApp.cache['dropzone'] = document.getElementById('photo-dropzone');
   TpApp.cache['welcomemsg'] = document.getElementById('welcome-msg');
   TpApp.cache['map'] = document.getElementById('map');
+  TpApp.cache['uploadfallback'] = document.getElementById('upload-fallback');
 
   if (!Helpers.detection.hasFileAPI()) {
     TpApp.cache['body'].classList.add('no-FileAPI');

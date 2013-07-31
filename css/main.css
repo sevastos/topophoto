@@ -522,11 +522,20 @@ input {
 input[type=submit] {
     background-color: #76CA76;
     color: #fff;
+    padding: 6px;
     font-weight: 400;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    box-shadow: 0px 1px 1px rgba(0,0,0,0.3);
+    -webkit-transition: 0.4s all;
+    -moz-transition: 0.4s all;
+    -ms-transition: 0.4s all;
+    -o-transition: 0.4s all;
+    transition: 0.4s all;
 }
-
+input[type=submit]:active {
+    box-shadow: inset 0px 1px 1px rgba(0,0,0,0.3);
+}
 .visualhide {
     border: 0;
     clip: rect(0 0 0 0);
@@ -605,7 +614,7 @@ input[type=submit] {
     bottom: 50px;
     text-align: center;
     box-sizing: border-box;
-    /*padding-top: 20%;*/
+    padding-top: 10%;
 
     display: table-cell;
     vertical-align: middle;
@@ -804,6 +813,19 @@ a {
 .hide-photolist #map {
     margin-bottom: 0;
     margin-right: 0;
+}
+
+.hide-photolist #upload-form {
+    display: none;
+    opacity: 0;
+    -webkit-transition: 0.5s opacity;
+}
+
+#upload-form {
+    display: block;
+    opacity: 1;
+    float: right;
+    margin: 15px 0 15px;
 }
 
 .photolist {
