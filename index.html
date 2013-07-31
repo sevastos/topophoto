@@ -14,7 +14,7 @@
         <!--[if lte IE 8]>
             <link href='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.ie.css' rel='stylesheet' >
         <![endif]-->
-        <link href="http://fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">
+        <link href="//fonts.googleapis.com/css?family=Lato:300,400" rel="stylesheet">
         <link href="css/fonts.css" rel="stylesheet">
         <link href="css/main.css" rel="stylesheet">
 
@@ -37,26 +37,38 @@
                 <input type="text" id="q" placeholder="Search flickr..." autocomplete="off">
                 <input type="submit" value="Load" id="trigger">
             </form> -->
-
-
         </header>
 
-        <div id="map"></div>
+        <div id="map" class="afterwards"></div>
         <div class="photolist">
             <ul id="photolist" class="block animated"></ul>
         </div>
 
         <div class="full modal dnd-msg" id="photo-dropzone">Drop your geotagged photos here</div>
 
+<!-- 
+        <div id="thumbtip">
+            <img src="//:0" />
+        </div> -->
+
+        <footer>
+            <span class="left">
+                Made for <a href="https://developer.mozilla.org/en/demos/devderby">
+                <span class="icon-mozilla" title="Mozilla">
+                    <span class="visualhide">Mozilla</span>
+                </span> DevDerby</a> &amp; the
+                <span class="icon-earth" title="World">
+                    <span class="visualhide">World</span>
+                </span>
+            </span>
+            <a href="http://twitter.com/smas" rel="external"><span class="icon-twitter"></span> Follow on Twitter</a> &nbsp;
+            <a href="https://github.com/sevastos/topophoto" rel="external"><span class="icon-github-2"></span> Fork on Github</a>
+        </footer>
+
         <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
         <script>window.jQuery || document.write('<script src="js/jquery-1.10.2.min.js"><\/script>')</script>
         <script src="js/imagesloaded.pkgd.min.js"></script>
         <script src='//api.tiles.mapbox.com/mapbox.js/v1.3.1/mapbox.js'></script>
-
-
-        <div id="thumbtip">
-            <img src="//:0" />
-        </div>
 
         <script src="js/load-image.min.js"></script>
         <script src="js/main.js"></script>

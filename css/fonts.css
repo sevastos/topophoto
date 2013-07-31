@@ -27,7 +27,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"] {
 */
-.icon-images, .icon-location, .icon-location-2, .icon-compass, .icon-map, .icon-clock, .icon-busy, .icon-spinner, .icon-cog, .icon-info, .icon-info-2, .icon-github, .icon-github-2, .icon-twitter, .icon-twitter-2, .icon-twitter-3, .icon-remove, .icon-upload, .icon-hammer, .icon-upload-2, .icon-loop, .icon-loop-2, .icon-flickr, .icon-flickr-2, .icon-flickr-3, .icon-target, .icon-search, .icon-binoculars, .icon-earth, .icon-globe, .icon-disk, .icon-checkmark, .icon-close, .icon-IcoMoon, .icon-camera, .icon-download, .icon-folder-open, .icon-storage, .icon-screen, .icon-mobile, .icon-tablet, .icon-tv, .icon-zoom-in, .icon-zoom-out, .icon-cog-2, .icon-cogs, .icon-wrench, .icon-lab, .icon-fire, .icon-download-2, .icon-upload-3, .icon-download-3, .icon-pencil, .icon-laptop, .icon-remove-2 {
+.icon-location, .icon-location-2, .icon-compass, .icon-map, .icon-clock, .icon-busy, .icon-spinner, .icon-cog, .icon-info, .icon-info-2, .icon-github, .icon-github-2, .icon-twitter, .icon-twitter-2, .icon-twitter-3, .icon-remove, .icon-upload, .icon-hammer, .icon-upload-2, .icon-loop, .icon-loop-2, .icon-flickr, .icon-flickr-2, .icon-flickr-3, .icon-target, .icon-search, .icon-binoculars, .icon-earth, .icon-globe, .icon-disk, .icon-checkmark, .icon-close, .icon-IcoMoon, .icon-camera, .icon-download, .icon-folder-open, .icon-storage, .icon-screen, .icon-mobile, .icon-tablet, .icon-tv, .icon-zoom-in, .icon-zoom-out, .icon-cog-2, .icon-cogs, .icon-wrench, .icon-lab, .icon-fire, .icon-download-2, .icon-upload-3, .icon-download-3, .icon-pencil, .icon-laptop, .icon-remove-2, .icon-mozilla {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -36,9 +36,6 @@ you can use the generic selector below, but it's slower:
 	text-transform: none;
 	line-height: 1;
 	-webkit-font-smoothing: antialiased;
-}
-.icon-images:before {
-	content: "\e000";
 }
 .icon-location:before {
 	content: "\e001";
@@ -201,4 +198,7 @@ you can use the generic selector below, but it's slower:
 }
 .icon-remove-2:before {
 	content: "\e036";
+}
+.icon-mozilla:before {
+	content: "\e000";
 }

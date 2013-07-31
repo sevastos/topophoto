@@ -450,6 +450,7 @@ html, body {
     font-family: 'Lato', sans-serif;
     font-size: 14px;
     line-height: 17px;
+    color: #7A7A7A;
 }
 button, input, select, textarea {
     font-family: inherit;
@@ -526,7 +527,16 @@ input[type=submit] {
     text-rendering: optimizeLegibility;
 }
 
-
+.visualhide {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
 
 #search {
     /*position: fixed;*/
@@ -599,6 +609,31 @@ header {
 header h1 {
     float: left;
 }
+
+footer {
+    text-align: right;
+    position: fixed;
+    bottom: 7px;
+    left: 30px;
+    right: 30px;
+}
+
+.left {
+    float: left;
+}
+
+a {
+    color: #636363;
+}
+
+footer a {
+    text-decoration: none;
+}
+
+footer a:hover {
+    border-bottom: 1px dashed #999999;
+}
+
 
 /* layout v3 */
 #map {
@@ -748,16 +783,13 @@ header h1 {
     margin-left: 1%;
     box-sizing: border-box;
 }
-.photolist-size {
-    display: block;
-    font-size: 10px;
-}
-.photolist-coords {
+
+.photolist-size, .photolist-coords {
     display: block;
     font-size: 10px;
     white-space: nowrap;
+    color: #666;
 }
-
 
 .photolist-info span span {
     vertical-align: -1px;
@@ -771,6 +803,21 @@ header h1 {
  *      |pppppp|
 */
 @media (orientation: portrait) {
+    .photolist {
+        max-height: 31%;
+        min-height: 80px;
+        box-shadow: 0px 1px 1px #888;
+        box-shadow: 0px 1px 1px rgba(0,0,0,0.3);
+    }
+
+    #map {
+        max-height: 53%;
+        margin-bottom: 100px;
+    }
+    .hide-photolist #map {
+        margin-bottom: 0;
+        max-height: inherit;
+    }
 
 }
 
@@ -922,7 +969,10 @@ header h1 {
     }
 }
 .animated {
-    -webkit-animation-fill-mode:both;-moz-animation-fill-mode:both;-ms-animation-fill-mode:both;-o-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-duration:1s;-moz-animation-duration:1s;-ms-animation-duration:1s;-o-animation-duration:1s;animation-duration:1s;}.animated.hinge{-webkit-animation-duration:2s;-moz-animation-duration:2s;-ms-animation-duration:2s;-o-animation-duration:2s;animation-duration:2s;
+    -webkit-animation-fill-mode:both;-moz-animation-fill-mode:both;-ms-animation-fill-mode:both;-o-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-duration:1s;-moz-animation-duration:1s;-ms-animation-duration:1s;-o-animation-duration:1s;animation-duration:1s;
+}
+.animated.afterwards {
+    -webkit-animation-fill-mode:afterwards;-moz-animation-fill-mode:afterwards;-ms-animation-fill-mode:afterwards;-o-animation-fill-mode:afterwards;animation-fill-mode:afterwards;-webkit-animation-duration:1s;-moz-animation-duration:1s;-ms-animation-duration:1s;-o-animation-duration:1s;animation-duration:1s;
 }
 .bounceIn {
     -webkit-animation-fill-mode:both;-moz-animation-fill-mode:both;-ms-animation-fill-mode:both;-o-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-duration:1s;-moz-animation-duration:1s;-ms-animation-duration:1s;-o-animation-duration:1s;animation-duration:1s;}.animated.hinge{-webkit-animation-duration:2s;-moz-animation-duration:2s;-ms-animation-duration:2s;-o-animation-duration:2s;animation-duration:2s;

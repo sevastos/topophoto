@@ -20,6 +20,16 @@ var DIMAP = {
     'geolon': 'lon'
 };
 
+// Multi-class manipulation to avoid browser inconsistencies
+// https://gist.github.com/sevastos/6123053
+['add', 'remove'].forEach(function(action) {
+  DOMTokenList.prototype[action + 'Many'] = function() {
+    for (var i = arguments.length - 1; i >= 0; i--) {
+      this[action](arguments[i]);
+    };
+  }  
+});
+
 function getFlickrPics(opts){
     var tags = (opts['text']?opts['text']+',':'')+encodeURIComponent('geo:lon');
     //var pic= $("#box").val();
@@ -123,7 +133,7 @@ map.on('ready', function() {
     imagesLoaded(document.querySelectorAll('.leaflet-tile'))
         .on('always', function(instance) {
             console.log('images loaded');
-            document.getElementById('map').classList.add('animated', 'mapLoaded');
+            document.getElementById('map').classList.addMany('animated', 'mapLoaded');
         });
 });
 
@@ -140,7 +150,7 @@ map.markerLayer.on('click', function(e) {
   [].forEach.call(
     document.querySelectorAll('.photolist li.active'), 
     function(el){
-      el.classList.remove('active', 'hover');
+      el.classList.removeMany('active', 'hover');
     }
   );
 
@@ -192,7 +202,7 @@ map.on('popupclose', function(e) {
   [].forEach.call(
     document.querySelectorAll('.photolist li.active'), 
     function(el){
-      el.classList.remove('active', 'hover');
+      el.classList.removeMany('active', 'hover');
     }
   );
   TpApp.map.compile();
@@ -238,7 +248,7 @@ TpPhoto.prototype.getLocString = function() {
 // next(generatedElement);
 TpPhoto.prototype.generateDomEl = function(next) {
   var el = document.createElement('li');
-  el.classList.add('animated', 'slideDownTiny');
+  el.classList.addMany('photolist-item', 'animated', 'slideDownTiny');
 
   var html = [
     '<div class="photolist-info">',
@@ -432,9 +442,9 @@ var TpApp = {
       } else {
         // Already exists
         var pcl = document.getElementById('photo-' + id);
-        pcl.classList.remove('slideDownTiny', 'animated', 'flash');
+        pcl.classList.removeMany('slideDownTiny', 'animated', 'flash');
         setTimeout(function(pcl) {
-           pcl.classList.add('animated', 'flash');
+           pcl.classList.addMany('animated', 'flash');
         }.bind(this, pcl), 10);
       }
     },
