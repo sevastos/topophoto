@@ -40,9 +40,12 @@
         </header>
 
         <div id="welcome-msg" class="welcome-msg fadeIn animated">
-            <a href="#">Click to select</a>
-            <span class="needs-FileAPI">or Drop here</span>
-            your geotagged photos<br>and see them on a map <span class="icon-earth earthRotation animated"></span>!</div>
+            <div>
+                <a href="#">Click to select</a>
+                <span class="needs-FileAPI">or Drop here</span>
+                your geotagged photos<br>and see them on a map <span class="icon-earth earthRotation animated"></span>!
+            </div>
+        </div>
 
         <div id="map"></div>
         <div class="photolist">
@@ -70,7 +73,7 @@
             <a href="https://github.com/sevastos/topophoto" rel="external"><span class="icon-github-2"></span> Fork on Github</a>
         </footer>
 
-        <div id="stash" class="hidden"><input type="file" name="upload-fallback" /></div>
+        <div id="stash" class="hidden"><input type="file" id="upload-fallback" /></div>
 
         <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>-->
         <script>window.jQuery || document.write('<script src="js/jquery-1.10.2.min.js"><\/script>')</script>

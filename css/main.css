@@ -605,7 +605,11 @@ input[type=submit] {
     bottom: 50px;
     text-align: center;
     box-sizing: border-box;
-    padding-top: 20%;
+    /*padding-top: 20%;*/
+
+    display: table-cell;
+    vertical-align: middle;
+
     font-size: 34px;
     line-height: 41px;
     text-shadow: 0px 1px 1px #000;
@@ -621,6 +625,11 @@ input[type=submit] {
     -ms-transition: 0.4s opacity;
     -o-transition: 0.4s opacity;
     transition: 0.4s opacity;
+}
+
+.welcome-msg > div {
+    position: relative;
+    display: inline;
 }
 
 .dragging .welcome-msg {

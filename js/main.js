@@ -294,7 +294,7 @@ TpPhoto.prototype.generateDomEl = function(next) {
 
   //return el;
 }
-var xb;
+
 
 // Photo lib
 var TpApp = {
@@ -350,6 +350,23 @@ var TpApp = {
       } else {
         console.log('drag leave!!, doc [dropzone]', e.toElement.id); //, e
       }
+    }
+  },
+  traditionalUpload: {
+    init: function() {
+      //attach events
+      TpApp.cache['welcomemsg'].addEventListener('click', function(e){ 
+        console.log('welcomemsg', e);
+        if (e.stopPropagation) {
+          e.stopPropagation();
+        }
+        e.preventDefault();
+
+        TpApp.traditionalUpload.showFileDialog();
+      }, true);
+    },
+    showFileDialog: function() {
+      simulateClick('upload-fallback');
     }
   },
   // Files
@@ -659,6 +676,16 @@ var Helpers = {
   ui: {
     getScrollTop: function() {
       pl.offsetParent.scrollTop;
+    },
+    // http://stackoverflow.com/a/5658925/1139682 by Adam
+    simulateClick: function(elId) {
+        var evt;
+        var el = document.getElementById(elId);
+        if (document.createEvent) {
+            evt = document.createEvent("MouseEvents");
+            evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        }
+        (evt) ? el.dispatchEvent(evt) : (el.click && el.click());
     }
   }
 };
@@ -674,6 +701,8 @@ $(document).ready(function(){
   if (!Helpers.detection.hasFileAPI()) {
     TpApp.cache['body'].classList.add('no-FileAPI');
   }
+
+  TpApp.traditionalUpload.init();
 
   //TpApp.cache['thumbtip'] = document.getElementById('thumbtip');
   //TpApp.cache['thumbtip-img'] = document.querySelector('#thumbtip img');
