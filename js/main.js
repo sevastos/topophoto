@@ -147,7 +147,8 @@ TpPhoto.prototype.generateDomEl = function(next) {
 var TpApp = {
   // Caching
   cache: {
-    'atLeastOneGood': false
+    'atLeastOneGood': false,
+    'notifId': 0,
   },
   // Vars
   _photosStore: [],
@@ -223,9 +224,9 @@ var TpApp = {
     // all
     processAll: function(files) {
       for (var i = 0, f; f = files[i]; i++) {
-        if (['jpg', 'jpeg'].indexOf(f.name.split('.').pop().toLowerCase()) === -1) {
-          continue;
-        }
+        // if (['jpg', 'jpeg'].indexOf(f.name.split('.').pop().toLowerCase()) === -1) {
+        //   continue;
+        // }
         // Read the File objects in this FileList.
         TpApp.file.process(f);
       }
@@ -234,6 +235,10 @@ var TpApp = {
     process: function(file) {
       try {
         TpApp.photo.getLatLng(file, function(file, loc) {
+          if (typeof loc === 'string') {
+            TpApp.file.processError(loc, file);
+            return;
+          }
           if (TpApp.cache['atLeastOneGood'] === false) {
             TpApp.ui.showMap();
             TpApp.cache['atLeastOneGood'] = true;
@@ -243,8 +248,36 @@ var TpApp = {
           TpApp.map.compile();
         });
       } catch(e) {
-        Helpers('Invalid photo', e);
+        TpApp.file.processError(e, file);
       }
+    },
+    processError: function(e, file) {
+      var msg = '';
+      switch(e){
+        case 'nogeotag':
+        case 'parsingprob':
+        default:
+          msg = 'is not a geotagged photo';
+          //msg = 'failed for an unknown reason';
+      }
+
+      msg = '<strong>'+Helpers.text.safe(file.name) + '</strong> ' + msg;
+      var notifId = ++TpApp.cache['notifId'];
+      var notifEl = document.createElement('span');
+      notifEl.setAttribute('id', 'notif-' + notifId);
+      notifEl.classList.addMany('notification', 'slideOutUp', 'delayed', 'animated');
+      notifEl.innerHTML = msg;
+      TpApp.cache['notifcnt'].appendChild(notifEl);
+      TpApp.cache['notifwrap'].classList.remove('invisible');
+
+      setTimeout(function(id) {
+        document.getElementById('notif-'+id).remove();
+        if (document.querySelectorAll('.notification').length === 0) {
+          TpApp.cache['notifwrap'].classList.add('invisible');
+        }
+      }.bind(this, notifId), 1800);
+
+      Helpers.log('Invalid photo', e);      
     }
   },
   // Manage the internal array of photos
@@ -331,7 +364,7 @@ var TpApp = {
     getLatLng: function(file, next) {
       loadImage.parseMetaData(file, function(data) {
         if (!data) {
-          next(data, null);  
+          next('file', 'parsingprob');
           return;
         }
 
@@ -342,6 +375,8 @@ var TpApp = {
 
         if (typeof loc[GEOLAT] === 'number' && typeof loc[GEOLON] === 'number') {
           next(file, loc);
+        } else {
+          next(file, 'nogeotag');
         }
 
       }, {
@@ -525,7 +560,9 @@ var Helpers = {
   },
   text: {
     safe: function(input) {
-      return document.createTextNode(input).textContent;
+      var el = document.createElement('div');
+      el.textContent = input;
+      return el.innerHTML;
     },
     smartBytes: function(bytes) {
       var sizes = ['T', 'G', 'M', 'K'];
@@ -565,6 +602,8 @@ $(document).ready(function(){
   TpApp.cache['welcomemsg'] = document.getElementById('welcome-msg');
   TpApp.cache['map'] = document.getElementById('map');
   TpApp.cache['uploadfallback'] = document.getElementById('upload-fallback');
+  TpApp.cache['notifwrap'] = document.getElementById('notifications-wrap');
+  TpApp.cache['notifcnt'] = document.getElementById('notifications-cnt');
 
   if (!Helpers.detection.hasFileAPI()) {
     TpApp.cache['body'].classList.add('no-FileAPI');
