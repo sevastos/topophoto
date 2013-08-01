@@ -11,13 +11,13 @@ var GEOLON = 1;
     for (var i = arguments.length - 1; i >= 0; i--) {
       this[action](arguments[i]);
     };
-  }  
+  }
 });
 
 // APP
 var photoLib = {};
 
-/// MAP      
+/// MAP
 var map = L.mapbox.map('map', 'sevm.map-pfi9rnav', {zoomControl: true})
             .setView([26, 6], 2);
 
@@ -36,7 +36,7 @@ map.markerLayer.on('click', function(e) {
   TpApp.ui.scrollTo(id, 1000);
 
   [].forEach.call(
-    document.querySelectorAll('.photolist li.active'), 
+    document.querySelectorAll('.photolist li.active'),
     function(el){
       el.classList.removeMany('active', 'hover');
     }
@@ -55,14 +55,14 @@ map.markerLayer.on('click', function(e) {
   map.setView(latlng, zoom, {animate: true});
 
   TpApp.map.compile();
-  
+
 });
 
 map.markerLayer.on('mouseover', function(e) {
   var id = e.layer.feature.properties.id;
   var photoEl = document.getElementById('photo-' + id);
   TpApp.ui.scrollTo(id, 1000);
-  photoEl.classList.add('hover');  
+  photoEl.classList.add('hover');
 });
 
 map.markerLayer.on('mouseout', function(e) {
@@ -192,14 +192,14 @@ var TpApp = {
         TpApp.dnd.dragOutTimer = setTimeout(function() {
           TpApp.cache['body'].classList.remove('dragging');
           TpApp.cache['dropzone'].classList.remove('hover');
-        }, 100);           
+        }, 100);
       }
     }
   },
   traditionalUpload: {
     init: function() {
       //attach events
-      TpApp.cache['welcomemsg'].addEventListener('click', function(e){ 
+      TpApp.cache['welcomemsg'].addEventListener('click', function(e){
         if (e.stopPropagation) {
           e.stopPropagation();
         }
@@ -224,9 +224,6 @@ var TpApp = {
     // all
     processAll: function(files) {
       for (var i = 0, f; f = files[i]; i++) {
-        // if (['jpg', 'jpeg'].indexOf(f.name.split('.').pop().toLowerCase()) === -1) {
-        //   continue;
-        // }
         // Read the File objects in this FileList.
         TpApp.file.process(f);
       }
@@ -234,6 +231,11 @@ var TpApp = {
     // each
     process: function(file) {
       try {
+        if (!file.name  || ['jpg', 'jpeg'].indexOf(file.name.split('.').pop().toLowerCase()) === -1) {
+          TpApp.file.processError('nojpeg', file);
+          return;
+        }
+
         TpApp.photo.getLatLng(file, function(file, loc) {
           if (typeof loc === 'string') {
             TpApp.file.processError(loc, file);
@@ -254,10 +256,14 @@ var TpApp = {
     processError: function(e, file) {
       var msg = '';
       switch(e){
+        case 'nojpeg':
+          msg = 'is not a JPEG image';
+        case 'noexif':
+          msg = 'has no EXIF or GPS tags';
         case 'nogeotag':
         case 'parsingprob':
         default:
-          msg = 'is not a geotagged photo';
+          msg = 'is not a Geotagged photo';
           //msg = 'failed for an unknown reason';
       }
 
@@ -277,7 +283,7 @@ var TpApp = {
         }
       }.bind(this, notifId), 1800);
 
-      Helpers.log('Invalid photo', e);      
+      Helpers.log('Invalid photo', e);
     }
   },
   // Manage the internal array of photos
@@ -306,7 +312,7 @@ var TpApp = {
         if (  aPhoto.file.name !== photo.file.name
            || aPhoto.file.size !== photo.file.size
            || typeof aPhoto.file.lastModifiedDate !== typeof photo.file.lastModifiedDate
-           || (aPhoto.file.lastModifiedDate && 
+           || (aPhoto.file.lastModifiedDate &&
                 (+aPhoto.file.lastModifiedDate !== +photo.file.lastModifiedDate)
               )
         ){
@@ -364,7 +370,12 @@ var TpApp = {
     getLatLng: function(file, next) {
       loadImage.parseMetaData(file, function(data) {
         if (!data) {
-          next('file', 'parsingprob');
+          next(file, 'parsingprob');
+          return;
+        }
+
+        if (typeof data.exif === 'undefined' || !data.exif || typeof data.exif['get'] !== 'function') {
+          next(file, 'noexif');
           return;
         }
 
@@ -375,8 +386,10 @@ var TpApp = {
 
         if (typeof loc[GEOLAT] === 'number' && typeof loc[GEOLON] === 'number') {
           next(file, loc);
+          return;
         } else {
           next(file, 'nogeotag');
+          return;
         }
 
       }, {
@@ -392,7 +405,7 @@ var TpApp = {
       for (var id = TpApp._photosStore.length - 1; id >= 0; id--) {
         var photo = TpApp._photosStore[id];
         if (typeof photo['marker'] === 'undefined') {
-          photo['marker'] = TpApp.map.createMarkerFromPhoto(photo, id);  
+          photo['marker'] = TpApp.map.createMarkerFromPhoto(photo, id);
           lib[id] = photo['marker'];
         } else {
           if (typeof TpApp.cache.activePhoto !== 'undefined' && TpApp.cache.activePhoto === id) {
@@ -404,7 +417,7 @@ var TpApp = {
       }
 
       if (TpApp._markersStore.length !== 0) {
-        map.markerLayer.setGeoJSON(lib);  
+        map.markerLayer.setGeoJSON(lib);
       }
     },
     createMarkerFromPhoto: function(photo, id) {
@@ -454,7 +467,7 @@ var TpApp = {
       var deltaScrollTop = 0;
       var absTarget = photoTop;
       var dir = '';
-      
+
       if (photoTop < photoListViewTop) {
         //scroll up
         dir = '-';
@@ -527,7 +540,7 @@ var Helpers = {
      * Convert geo cords to decimal degrees
      * @param  {Array} coords [degrees, minutes, seconds]
      * @param  {String} reference [N|S|W|E] Reference cardinal direction
-     * @return {Number} Decimal degrees 
+     * @return {Number} Decimal degrees
      */
     coordsToDec: function(coords, reference) {
       if (!coords || coords.length !== 3) {
