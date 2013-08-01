@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="the.appcache">
+<html>
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -70,7 +70,9 @@
             <a href="https://github.com/sevastos/topophoto" rel="external"><span class="icon-github-2"></span> Fork on Github</a>
         </footer>
 
-        <div id="stash" class="hidden"><input type="file" multiple="multiple" accept="image/jpeg" id="upload-fallback" /></div>
+        <div id="stash" class="hidden">
+            <form id="upload-fallback-form"><input type="file" multiple="multiple" accept="image/jpeg" id="upload-fallback" /></form>
+        </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script>window.jQuery || document.write('<script src="js/jquery-1.10.2.min.js"><\/script>')</script>

@@ -213,6 +213,9 @@ var TpApp = {
 
     },
     showFileDialog: function() {
+      if (typeof TpApp.cache['uploadfallbackform']['reset'] === 'function') {
+        TpApp.cache['uploadfallbackform'].reset();
+      }
       Helpers.ui.simulateClick('upload-fallback');
     },
     processFiles: function() {
@@ -271,7 +274,7 @@ var TpApp = {
       var notifId = ++TpApp.cache['notifId'];
       var notifEl = document.createElement('span');
       notifEl.setAttribute('id', 'notif-' + notifId);
-      notifEl.classList.addMany('notification', 'slideOutUp', 'delayed', 'animated');
+      notifEl.classList.addMany('notification', 'slideOutUp', 'delayed1s', 'animated');
       notifEl.innerHTML = msg;
       TpApp.cache['notifcnt'].appendChild(notifEl);
       TpApp.cache['notifwrap'].classList.remove('invisible');
@@ -614,6 +617,7 @@ $(document).ready(function(){
   TpApp.cache['dropzone'] = document.getElementById('photo-dropzone');
   TpApp.cache['welcomemsg'] = document.getElementById('welcome-msg');
   TpApp.cache['map'] = document.getElementById('map');
+  TpApp.cache['uploadfallbackform'] = document.getElementById('upload-fallback-form');
   TpApp.cache['uploadfallback'] = document.getElementById('upload-fallback');
   TpApp.cache['notifwrap'] = document.getElementById('notifications-wrap');
   TpApp.cache['notifcnt'] = document.getElementById('notifications-cnt');
