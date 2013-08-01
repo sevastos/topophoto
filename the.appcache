@@ -8,7 +8,7 @@ CACHE:
 # APP
 
 # html
-/
+./
 
 # css
 css/fonts.css
