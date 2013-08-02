@@ -1,5 +1,5 @@
 
-"use strict";
+'use strict';
 
 var GEOLAT = 0;
 var GEOLON = 1;
@@ -7,15 +7,12 @@ var GEOLON = 1;
 // Multi-class manipulation to avoid browser inconsistencies
 // https://gist.github.com/sevastos/6123053
 ['add', 'remove'].forEach(function(action) {
-  DOMTokenList.prototype[action + 'Many'] = function() {
+  window.DOMTokenList.prototype[action + 'Many'] = function() {
     for (var i = arguments.length - 1; i >= 0; i--) {
       this[action](arguments[i]);
-    };
-  }
+    }
+  };
 });
-
-// APP
-var photoLib = {};
 
 /// MAP
 var map = L.mapbox.map('map', 'sevm.map-pfi9rnav', {zoomControl: true})
@@ -23,7 +20,7 @@ var map = L.mapbox.map('map', 'sevm.map-pfi9rnav', {zoomControl: true})
 
 map.on('ready', function() {
     imagesLoaded(document.querySelectorAll('.leaflet-tile'))
-        .on('always', function(instance) {
+        .on('always', function() {
             document.getElementById('map').classList.add('ready');
         });
 });
@@ -81,7 +78,7 @@ var TpPhoto = function(file, loc) {
 
 TpPhoto.prototype.getLocString = function() {
   return !!this.loc ? this.loc.join(',') : '';
-}
+};
 
 // next(generatedElement);
 TpPhoto.prototype.generateDomEl = function(next) {
@@ -96,7 +93,7 @@ TpPhoto.prototype.generateDomEl = function(next) {
 
     var photoId = (e.target || e.srcElement).offsetParent.getAttribute('data-id');
     if (!isNaN(photoId)) {
-      TpApp.ui.zoomToMarker(parseInt(photoId) + 1);
+      TpApp.ui.zoomToMarker(parseInt(photoId, 10) + 1);
     }
   }, false);
 
@@ -118,9 +115,8 @@ TpPhoto.prototype.generateDomEl = function(next) {
   loadImage(
     this.file,
     function (img) {
-      if(img.type !== "error") {
+      if(img.type !== 'error') {
           img.classList.add('photolist-img');
-          //el.innerHTML = html.join('');
           var imgWrap = document.createElement('div');
           imgWrap.classList.add('photolist-img-wrap');
           imgWrap.appendChild(img);
@@ -140,7 +136,7 @@ TpPhoto.prototype.generateDomEl = function(next) {
     }
   );
 
-}
+};
 
 
 // Photo lib
@@ -157,8 +153,8 @@ var TpApp = {
   dnd: {
     dragOutTimer: null,
     handleDrop: function(e) {
-      TpApp.cache['body'].classList.remove('dragging');
-      TpApp.cache['dropzone'].classList.remove('hover');
+      TpApp.cache.body.classList.remove('dragging');
+      TpApp.cache.dropzone.classList.remove('hover');
 
       if (e.stopPropagation) {
         e.stopPropagation();
@@ -180,18 +176,18 @@ var TpApp = {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'copy';
     },
-    handleEnter: function(e) {
+    handleEnter: function() {
       if (TpApp.dnd.dragOutTimer) {
         clearTimeout(TpApp.dnd.dragOutTimer);
       }
-      TpApp.cache['body'].classList.add('dragging');
-      TpApp.cache['dropzone'].classList.add('hover');
+      TpApp.cache.body.classList.add('dragging');
+      TpApp.cache.dropzone.classList.add('hover');
     },
     handleLeave: function(e) {
       if (e.toElement.id === 'photo-dropzone') {
         TpApp.dnd.dragOutTimer = setTimeout(function() {
-          TpApp.cache['body'].classList.remove('dragging');
-          TpApp.cache['dropzone'].classList.remove('hover');
+          TpApp.cache.body.classList.remove('dragging');
+          TpApp.cache.dropzone.classList.remove('hover');
         }, 100);
       }
     }
@@ -199,7 +195,7 @@ var TpApp = {
   traditionalUpload: {
     init: function() {
       //attach events
-      TpApp.cache['welcomemsg'].addEventListener('click', function(e){
+      TpApp.cache.welcomemsg.addEventListener('click', function(e){
         if (e.stopPropagation) {
           e.stopPropagation();
         }
@@ -209,17 +205,17 @@ var TpApp = {
       }, true);
       document.getElementById('upload-more').addEventListener('click', TpApp.traditionalUpload.showFileDialog);
 
-      TpApp.cache['uploadfallback'].addEventListener('change', TpApp.traditionalUpload.processFiles);
+      TpApp.cache.uploadfallback.addEventListener('change', TpApp.traditionalUpload.processFiles);
 
     },
     showFileDialog: function() {
-      if (typeof TpApp.cache['uploadfallbackform']['reset'] === 'function') {
-        TpApp.cache['uploadfallbackform'].reset();
+      if (typeof TpApp.cache.uploadfallbackform.reset === 'function') {
+        TpApp.cache.uploadfallbackform.reset();
       }
       Helpers.ui.simulateClick('upload-fallback');
     },
     processFiles: function() {
-      TpApp.file.processAll(TpApp.cache['uploadfallback'].files);
+      TpApp.file.processAll(TpApp.cache.uploadfallback.files || []);
     }
   },
   // Files
@@ -244,9 +240,9 @@ var TpApp = {
             TpApp.file.processError(loc, file);
             return;
           }
-          if (TpApp.cache['atLeastOneGood'] === false) {
+          if (TpApp.cache.atLeastOneGood === false) {
             TpApp.ui.showMap();
-            TpApp.cache['atLeastOneGood'] = true;
+            TpApp.cache.atLeastOneGood = true;
           }
 
           TpApp.photo.addToList(new TpPhoto(file, loc));
@@ -261,28 +257,30 @@ var TpApp = {
       switch(e){
         case 'nojpeg':
           msg = 'is not a JPEG image';
+          break;
         case 'noexif':
           msg = 'has no EXIF or GPS tags';
-        case 'nogeotag':
-        case 'parsingprob':
+          break;
+        // case 'nogeotag':
+        // case 'parsingprob':
         default:
           msg = 'is not a Geotagged photo';
           //msg = 'failed for an unknown reason';
       }
 
       msg = '<strong>'+Helpers.text.safe(file.name) + '</strong> ' + msg;
-      var notifId = ++TpApp.cache['notifId'];
+      var notifId = ++TpApp.cache.notifId;
       var notifEl = document.createElement('span');
       notifEl.setAttribute('id', 'notif-' + notifId);
       notifEl.classList.addMany('notification', 'slideOutUp', 'delayed1s', 'animated');
       notifEl.innerHTML = msg;
-      TpApp.cache['notifcnt'].appendChild(notifEl);
-      TpApp.cache['notifwrap'].classList.remove('invisible');
+      TpApp.cache.notifcnt.appendChild(notifEl);
+      TpApp.cache.notifwrap.classList.remove('invisible');
 
       setTimeout(function(id) {
         document.getElementById('notif-'+id).remove();
         if (document.querySelectorAll('.notification').length === 0) {
-          TpApp.cache['notifwrap'].classList.add('invisible');
+          TpApp.cache.notifwrap.classList.add('invisible');
         }
       }.bind(this, notifId), 1800);
 
@@ -296,7 +294,7 @@ var TpApp = {
       if (index !== false) {
         return [false, index];
       }
-      var index = TpApp._photosStore.push(photo) - 1;
+      index = TpApp._photosStore.push(photo) - 1;
       return [true, index];
     },
     get: function(id) {
@@ -312,12 +310,12 @@ var TpApp = {
         var aPhoto = TpApp._photosStore[i];
 
         // Compare files
-        if (  aPhoto.file.name !== photo.file.name
-           || aPhoto.file.size !== photo.file.size
-           || typeof aPhoto.file.lastModifiedDate !== typeof photo.file.lastModifiedDate
-           || (aPhoto.file.lastModifiedDate &&
-                (+aPhoto.file.lastModifiedDate !== +photo.file.lastModifiedDate)
-              )
+        if (aPhoto.file.name !== photo.file.name ||
+            aPhoto.file.size !== photo.file.size ||
+            typeof aPhoto.file.lastModifiedDate !== typeof photo.file.lastModifiedDate ||
+            (aPhoto.file.lastModifiedDate &&
+              (+aPhoto.file.lastModifiedDate !== +photo.file.lastModifiedDate)
+            )
         ){
           continue;
         }
@@ -329,7 +327,7 @@ var TpApp = {
 
         // Same file
         return i;
-      };
+      }
 
       return false;
     },
@@ -377,7 +375,7 @@ var TpApp = {
           return;
         }
 
-        if (typeof data.exif === 'undefined' || !data.exif || typeof data.exif['get'] !== 'function') {
+        if (typeof data.exif === 'undefined' || !data.exif || typeof data.exif.get !== 'function') {
           next(file, 'noexif');
           return;
         }
@@ -407,14 +405,14 @@ var TpApp = {
       var lib = TpApp._markersStore || [];
       for (var id = TpApp._photosStore.length - 1; id >= 0; id--) {
         var photo = TpApp._photosStore[id];
-        if (typeof photo['marker'] === 'undefined') {
-          photo['marker'] = TpApp.map.createMarkerFromPhoto(photo, id);
-          lib[id] = photo['marker'];
+        if (typeof photo.marker === 'undefined') {
+          photo.marker = TpApp.map.createMarkerFromPhoto(photo, id);
+          lib[id] = photo.marker;
         } else {
           if (typeof TpApp.cache.activePhoto !== 'undefined' && TpApp.cache.activePhoto === id) {
-            photo['marker']['properties']['marker-color'] = '#7CB9FC';
+            photo.marker.properties['marker-color'] = '#7CB9FC';
           } else {
-            photo['marker']['properties']['marker-color'] = '#F65857';
+            photo.marker.properties['marker-color'] = '#F65857';
           }
         }
       }
@@ -449,12 +447,12 @@ var TpApp = {
   // UI
   ui: {
     zoomToMarker: function(id) {
-      var el = document.querySelector('#map .leaflet-marker-icon[title$="#'+parseInt(id)+'"]');
+      var el = document.querySelector('#map .leaflet-marker-icon[title$="#'+parseInt(id, 10)+'"]');
       Helpers.ui.simulateClick(el);
     },
     showMap: function() {
-      TpApp.cache['welcomemsg'].classList.add('hidden');
-      TpApp.cache['map'].classList.addMany('animated', 'mapLoaded');
+      TpApp.cache.welcomemsg.classList.add('hidden');
+      TpApp.cache.map.classList.addMany('animated', 'mapLoaded');
     },
     scrollTo: function(photoId, duration) {
       var pl = document.getElementById('photolist').offsetParent;
@@ -474,11 +472,11 @@ var TpApp = {
       if (photoTop < photoListViewTop) {
         //scroll up
         dir = '-';
-        deltaScrollTop = parseInt(photoTop - photoListViewTop); // extra gutter?
+        deltaScrollTop = parseInt(photoTop - photoListViewTop, 10); // extra gutter?
       } else if (photoBottom > photoListViewBottom) {
         //scroll down
         dir = '+';
-        deltaScrollTop = parseInt(photoBottom - photoListViewBottom); //extra gutter?
+        deltaScrollTop = parseInt(photoBottom - photoListViewBottom, 10); //extra gutter?
       } else {
         // in view
         //deltaScrollTop = 0;
@@ -489,7 +487,6 @@ var TpApp = {
       var steps = (fps * 1e3) / duration;
       var stepTime = duration / (fps * 1e3);
       var step = deltaScrollTop / steps;
-      var interval;
 
       if (TpApp.cache.interval) {
         clearInterval(TpApp.cache.interval);
@@ -535,7 +532,7 @@ var Helpers = {
   },
   detection: {
     hasFileAPI : function() {
-      return window.FileList && "ondrop" in document.createElement('div');
+      return window.FileList && 'ondrop' in document.createElement('div');
     }
   },
   gps: {
@@ -549,9 +546,9 @@ var Helpers = {
       if (!coords || coords.length !== 3) {
         return false;
       }
-      var degrees =  (coords[0] || 0)          // degrees
-                  + ((coords[1] || 0) / 60)    // minutes
-                  + ((coords[2] || 0) / 3600)  // seconds
+      var degrees = (coords[0] || 0) +        // degrees
+                    ((coords[1] || 0) / 60) + // minutes
+                    ((coords[2] || 0) / 3600) // seconds
                   ;
       if (reference === 'S' || reference === 'W') {
         degrees *= -1;
@@ -560,8 +557,8 @@ var Helpers = {
     },
     decToCoords: function(dec) {
       return [
-        parseInt(dec),
-        (dec = dec % 1 * 60, parseInt(dec)),
+        parseInt(dec, 10),
+        (dec = dec % 1 * 60, parseInt(dec, 10)),
         dec % 1 * 60
       ];
     },
@@ -569,7 +566,7 @@ var Helpers = {
       var c = Helpers.gps.decToCoords(coords);
       return [
         c[0].toFixed(0) + '°',
-        c[1].toFixed(0) + "'",
+        c[1].toFixed(0) + '\'',
         (hideSeconds ? '' : c[2].toFixed(0) + '"')
       ].join(' ');
     }
@@ -594,16 +591,13 @@ var Helpers = {
     }
   },
   ui: {
-    getScrollTop: function() {
-      pl.offsetParent.scrollTop;
-    },
     // http://stackoverflow.com/a/5658925/1139682 by Adam
     simulateClick: function(elId) {
         var evt;
         var el = (typeof elId === 'string' ? document.getElementById(elId) : elId);
         if (document.createEvent) {
-            evt = document.createEvent("MouseEvents");
-            evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+            evt = document.createEvent('MouseEvents');
+            evt.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
         }
         (evt) ? el.dispatchEvent(evt) : (el.click && el.click());
     }
@@ -611,31 +605,31 @@ var Helpers = {
 };
 
 // INIT APP
-$(document).ready(function(){
-  TpApp.cache['body'] = document.body;
-  TpApp.cache['photolist'] = document.getElementById('photolist');
-  TpApp.cache['dropzone'] = document.getElementById('photo-dropzone');
-  TpApp.cache['welcomemsg'] = document.getElementById('welcome-msg');
-  TpApp.cache['map'] = document.getElementById('map');
-  TpApp.cache['uploadfallbackform'] = document.getElementById('upload-fallback-form');
-  TpApp.cache['uploadfallback'] = document.getElementById('upload-fallback');
-  TpApp.cache['notifwrap'] = document.getElementById('notifications-wrap');
-  TpApp.cache['notifcnt'] = document.getElementById('notifications-cnt');
+document.addEventListener('DOMContentLoaded', function() {
+  TpApp.cache.body = document.body;
+  TpApp.cache.photolist = document.getElementById('photolist');
+  TpApp.cache.dropzone = document.getElementById('photo-dropzone');
+  TpApp.cache.welcomemsg = document.getElementById('welcome-msg');
+  TpApp.cache.map = document.getElementById('map');
+  TpApp.cache.uploadfallbackform = document.getElementById('upload-fallback-form');
+  TpApp.cache.uploadfallback = document.getElementById('upload-fallback');
+  TpApp.cache.notifwrap = document.getElementById('notifications-wrap');
+  TpApp.cache.notifcnt = document.getElementById('notifications-cnt');
 
   if (!Helpers.detection.hasFileAPI()) {
-    TpApp.cache['body'].classList.add('no-FileAPI');
+    TpApp.cache.body.classList.add('no-FileAPI');
   }
 
   TpApp.traditionalUpload.init();
 
 
   // Drag and drop
-  document.addEventListener("dragenter", TpApp.dnd.handleEnter, false);
-  document.addEventListener("dragleave", TpApp.dnd.handleLeave, false);
-  document.addEventListener("dragover", TpApp.dnd.handleOver, false);
-  TpApp.cache['dropzone']
-          .addEventListener("dragover", TpApp.dnd.handleOver, false);
-  TpApp.cache['dropzone']
+  document.addEventListener('dragenter', TpApp.dnd.handleEnter, false);
+  document.addEventListener('dragleave', TpApp.dnd.handleLeave, false);
+  document.addEventListener('dragover', TpApp.dnd.handleOver, false);
+  TpApp.cache.dropzone
+          .addEventListener('dragover', TpApp.dnd.handleOver, false);
+  TpApp.cache.dropzone
           .addEventListener('drop', TpApp.dnd.handleDrop, false);
 
-});
+}, false);

@@ -1,0 +1,10 @@
+{
+  "predef": [
+    "L",
+    "imagesLoaded",
+    "loadImage",
+    "console"
+  ],
+  "expr": true
+}
+

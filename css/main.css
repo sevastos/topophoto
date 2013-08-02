@@ -687,6 +687,10 @@ header h1 {
     float: left;
 }
 
+h1 a {
+    color: #929292;
+}
+
 footer {
     text-align: right;
     position: fixed;
@@ -846,6 +850,9 @@ a {
     margin-right: 1%;
     overflow: hidden;
     position: relative;
+}
+.photolist-img-wrap canvas {
+    pointer-events: none;
 }
 .photolist-img {
     position: absolute;
@@ -1198,10 +1205,10 @@ a {
     -o-animation-name: slideOutUp;
     animation-name: slideOutUp;
 
-    -webkit-animation-duration: 1.3s;
-    -moz-animation-duration: 1.3s;
-    -o-animation-duration: 1.3s;
-    animation-duration: 1.3s;
+    -webkit-animation-duration: 1.8s;
+    -moz-animation-duration: 1.8s;
+    -o-animation-duration: 1.8s;
+    animation-duration: 1.8s;
 }
 /* slideDown */
 @-webkit-keyframes slideDown {
